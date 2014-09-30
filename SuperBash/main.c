@@ -39,8 +39,8 @@ int main(int argc, char** argv){
 	
 	return 0;
 }
-/*
-Sanders(char** string){  //Recursively searches input 2d character array for assignment objectives and passes them to their respective functions. Recursion is to catch nested statements.
+
+Sanders(char string[][]){  //Recursively searches input 2d character array for assignment objectives and passes them to their respective functions. Recursion is to catch nested statements.
 	int i = 0;
 	int k = 0;
 	int n=0;
@@ -48,12 +48,12 @@ Sanders(char** string){  //Recursively searches input 2d character array for ass
 	
 	while(string[k][i] != EOF){ 
 		if(string[k][i] == 'i' && string[k][i+1] == 'f'){  //Searches for if statements
-			arr = Sanders(arr);
 			while(string[k][i] != 'f' && string[k][i+1] != 'i'){
 				arr[n]=string[k];
 				k++;
 				n++;
 			}
+			arr = Sanders(arr); //Array is not complete FIX THIS
 			arr[n]="fi";
 			arr=Wescott(arr);
 			return arr;
@@ -72,11 +72,10 @@ Sanders(char** string){  //Recursively searches input 2d character array for ass
 		}
 	}
 }
-			
-			
-	*/
+
+
 	
-/*Macon(char ** string)
+Macon(char ** string)
 {
 	int i = 0;
 	int k = 0;
@@ -119,4 +118,4 @@ Sanders(char** string){  //Recursively searches input 2d character array for ass
 	
 	return arr;
 	
-}*/
+}
