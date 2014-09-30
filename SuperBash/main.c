@@ -59,7 +59,7 @@ Sanders(char** string){  //Recursively searches input 2d character array for ass
 			return arr;
 		}
 		
-		if(string[k][i] == 'r' && string[k][i+1] == 'e' && string[k][i] == 'p' && string[k][i+1] == 'a' && string[k][i] == 'e' && string[k][i+1] == 't'){  //Searches for repeat statements
+		if(string[k][i] == 'r' && string[k][i+1] == 'e' && string[k][i+2] == 'p' && string[k][i+3] == 'a' && string[k][i+4] == 'e' && string[k][i+5] == 't'){  //Searches for repeat statements
 			arr = Sanders(arr);
 			while(string[k][i] != '}'){
 				arr[n]=string[k];
@@ -75,3 +75,40 @@ Sanders(char** string){  //Recursively searches input 2d character array for ass
 			
 			
 	*/
+	
+/*Macon(char ** string)
+{
+	int i = 0;
+	int k = 0;
+	int n = 0;
+	
+	char arr[100][100];
+	
+	//Really simple way of doing this
+	char repeat[100]="repeatIndex1=0\nwhile [ $repeatIndex1 - lt $num ]\n";
+	char doString[100]="do\n";
+	char doneString[100]="repeatIndex1=$[$repeatIndex1+1]\ndone\n";
+
+	while(string[k][i] != EOF)
+	{
+		if (string[k][i] == 'r' && string[k][i+1] == 'e' && string[k][i+2] == 'p' && string[k][i+3] == 'e' && string[k][i+4] == 'a' && string[k][i+5] == 't')
+		{
+			strcpy(arr[k],repeat);
+		}
+		else if (string[k][i] == '{')
+		{
+			strcpy(arr[k],doString);
+		}
+		else if (string[k][i] == '}')
+		{
+			strcpy(arr[k],doneString);
+		}
+		else
+		{
+			arr[k][i] = string[k][i];
+		}
+	}
+	
+	return arr;
+	
+}*/
