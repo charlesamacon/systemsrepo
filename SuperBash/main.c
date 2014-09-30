@@ -94,18 +94,26 @@ Sanders(char** string){  //Recursively searches input 2d character array for ass
 		if (string[k][i] == 'r' && string[k][i+1] == 'e' && string[k][i+2] == 'p' && string[k][i+3] == 'e' && string[k][i+4] == 'a' && string[k][i+5] == 't')
 		{
 			strcpy(arr[k],repeat);
+			k++;
 		}
 		else if (string[k][i] == '{')
 		{
 			strcpy(arr[k],doString);
+			k++;
 		}
 		else if (string[k][i] == '}')
 		{
 			strcpy(arr[k],doneString);
+			k++;
 		}
 		else
 		{
-			arr[k][i] = string[k][i];
+			while (string[k][i+1] != NULL)
+			{
+				arr[k][i] = string[k][i];
+				i++;
+			}
+			k++;
 		}
 	}
 	
