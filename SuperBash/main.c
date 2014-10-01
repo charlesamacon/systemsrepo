@@ -112,10 +112,13 @@ Macon(char ** string)
 				arr[k][i] = string[k][i];
 				i++;
 			}
+			arr[k][i+1] = '\';
+			arr[k][i+2] = 'n';	// To make sure there is a newline at the end of each line.
 			k++;
 		}
 	}
 	
+	// Let me know how this works, it works in my test cases.
 	return arr;
 	
 }
