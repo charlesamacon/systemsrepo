@@ -1,3 +1,10 @@
+// SuperBash v1.0
+
+// Jordan Sanders
+// Charles Alan Macon
+// Garrett Wescott
+// Julie Quiroz
+
 #include <stdio.h>
 #include <string.h>
 
