@@ -42,55 +42,6 @@ int main(int argc, char** argv){
 	
 	fclose(input);
     
-	//——————————————————————————Space Fix------------------------------------
-	
-	i = 0;
-	k = 0;
-	int m = 0;
-	char equalindex[50][2];
-	
-	while(string[k][i] != EOF){
-		if(string[k][i] == '='){
-			equalindex[m][0]=k;
-			equalindex[m][1]=i;
-			m++;
-		}
-	}
-    printf("1\n");
-	m=0;
-	while(equalindex[m][0] != 0){
-        printf("2\n");
-		while(string[k][i] != EOF){
-            printf("3\n");
-			if(string[equalindex[m][0]][equalindex[m][1]-1] == ' '){
-				int donothing=1;
-			}
-			else if(string[equalindex[m][0]][equalindex[m][1]+1] == ' '){
-				int donothing=1;
-			}
-			else{
-                printf("4\n");
-				while (string[k][i+1] != EOF)
-				{
-					arr[k][i] = string[k][i];
-					i++;
-				}
-				arr[k][i+1] = '\n';
-				//arr[k][i+2] = 'n';	// To make sure there is a newline at the end of each line.
-				k++;
-			}
-			m++;
-		}
-	}
-    
-    for(k=0;k<100;k++){
-        for(i=0;i<100;i++){
-            string[k][i]=arr[k][i];
-        }
-    }
-    
-    printf("okay\n");
-
 	//-----------------------------Repeat Fix------------------------------------
 	
 	i = 0;
