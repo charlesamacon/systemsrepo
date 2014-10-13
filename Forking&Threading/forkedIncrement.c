@@ -1,3 +1,9 @@
+/*
+Jordan Sanders
+Julie Qiroz
+Garrett Wescott
+Charles Macon
+*/
 #include <stdio.h>
 #include <stdlib.h>
 #include <unistd.h>

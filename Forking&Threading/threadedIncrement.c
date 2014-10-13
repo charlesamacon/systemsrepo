@@ -1,3 +1,9 @@
+/*
+Jordan Sanders
+Julie Qiroz
+Garrett Wescott
+Charles Macon
+*/
 #include<stdio.h>
 #include<string.h>
 #include<pthread.h>
@@ -36,7 +42,7 @@ int main(void)
         pthread_create(&(tid[i]), NULL, &doSomeThing, NULL);
 		i++;
     }
-	pthread_join(tid[1], NULL);
+	pthread_join(tid[0], NULL);
 	printf("x: %d, y: %d\n", x, y);
     return 0;
 }
