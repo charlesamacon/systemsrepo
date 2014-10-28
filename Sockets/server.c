@@ -2,6 +2,7 @@
    The port number is passed as an argument */
 #include <stdio.h>
 #include <stdlib.h>
+#include <time.h>
 #include <string.h>
 #include <unistd.h>
 #include <sys/types.h> 
@@ -21,6 +22,20 @@ int main(int argc, char *argv[])
      char buffer[256];
      struct sockaddr_in serv_addr, cli_addr;
      int n;
+	 
+	 // Ticket array
+	 int tickArray[10];
+	 int tickArrayPopulatorIndex;
+	 srand(time(NULL));
+	 
+	 for (tickArrayPopulatorIndex = 0; tickArrayPopulatorIndex < 10; tickArrayPopulatorIndex++)
+	 {
+		// Hacking this together here to make sure the number you get is 5 digits long.
+		int r = (rand () % 89999) + 10000;
+		
+		tickArray[tickArrayPopulatorIndex] = r;
+	 }
+	 
      if (argc < 2) {
          fprintf(stderr,"ERROR, no port provided\n");
          exit(1);
@@ -46,9 +61,15 @@ int main(int argc, char *argv[])
      bzero(buffer,256);
      n = read(newsockfd,buffer,255);
      if (n < 0) error("ERROR reading from socket");
+	 
      printf("Here is the message: %s\n",buffer);
      n = write(newsockfd,"I got your message",18);
-     if (n < 0) error("ERROR writing to socket");
+	 if (n < 0) error("ERROR writing to socket");
+	 
+	 // THIS IS THE GENERAL AREA WHERE THINGS SHOULD HAPPEN.
+		// RIGHT AROUND HERE SOMEWHERE
+	 
+	 // CLEANUP
      close(newsockfd);
      close(sockfd);
      return 0; 
