@@ -1,0 +1,75 @@
+Very basically:
+
+shell.c
+-All of our includes
+-pid_d stuff
+-main()
+{
+    - status of child(ren)
+    - return value of waitPID stuff
+
+    while (quit == false)
+    {
+        - wait for background processes to do their thing
+        - this is where we handle the strings (send them to a function for this?)
+        - error checking is done here (or in the parser)
+    }
+
+   
+}
+
+-line parser()
+{
+    - parse lines into usable chunks
+        -create a multidimensional (at least 2d) array for chunks
+    - check for piping (if there's a pipe, move to the next main index of the chunk array)
+   
+    - After parsing, we essentially go into:
+    for (each "main index" of the chunk array)
+    {
+        - execute each command (with its particular command line arguments) in execute();
+        - if there is piping, these need to be done concurrently, so we should consider this greatly.
+    }
+
+    - Any clean up that is needed.
+}
+
+-execute()
+{
+    - child_pid stuff in here?
+    - check to make sure the command line arguments make sense (error handling)
+    - execute the programs as defined elsewhere (echo, ls, etc.)
+}
+
+Everything else that's already in ysh.c should go here (fill_argv, copy_envp, get_path_string, etc.)
+
+shell.h
+-Anything that we need to make sure is defined goes in here.
+-Any structs that we need to define, etc.
+
+progs.c
+-This is where everything that we're going to have to hard code should go
+-echo()
+{
+    - make sure variables are properly returned
+    - etc.
+}
+-man()
+{
+    - include a man page for each of the functions that we're implementing
+}
+-cpuUsage()
+{
+    - determine how much CPU has been used (on average) over the last 24 hours.
+}
+-bash++()
+{
+    - our bash++ precompiler should go here.
+}
+-extraLinuxUtil()
+{
+    - whatever that may be goes here.
+}
+
+progs.h
+etc., etc., etc.
