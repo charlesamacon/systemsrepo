@@ -4,7 +4,7 @@ shell.c
 -All of our includes
 -pid_d stuff
 -main()
-{
+{  // I think we should leave the currenty ysh.c main intact as it already has line parsing
     - status of child(ren)
     - return value of waitPID stuff
 
@@ -77,6 +77,16 @@ progs.c
 {
     - whatever that may be goes here.
 }
+redirect(){
+    - Takes output of command and writes its output to a specified file.
+}
+background(){
+    - Creates a forked process when the '&' char is found for the preceeding process..
+}
+Piping(){
+    - Creates 2 processes where the output of one is the input to the other.
+}
+
 
 progs.h
 etc., etc., etc.
