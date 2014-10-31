@@ -1,0 +1,27 @@
+man			User Commands
+
+Name
+	man - displays the manual page for a given command
+
+Synopsis
+	man [SHORT-OPTION]...
+
+Description
+
+	man is the system's manual pager. Each page argument given to man is
+	normally the name of a program, utility or function. The manual page
+	associated with each of these arguments is then found and displayed.
+
+	For the time being, this version of man will display the entire manual
+	page for a given command. Whether or not this will persist in the final
+	project remains to be seen. Short, sweet, and to the point right now.
+
+	Currently implemented man pages:
+	echo
+	cpusage
+	man
+
+Examples
+	
+	man ls
+		Display the manual page for the program ls.

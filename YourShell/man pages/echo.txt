@@ -1,0 +1,17 @@
+ECHO			User Commands
+
+Name
+	echo - display a line of text
+
+Synopsis
+	echo [SHORT-OPTION]... [STRING]...
+	echo LONG-OPTION
+
+Description
+
+	Echo the STRING(s) to standard output.
+
+	-n		do not output the trailing newline
+	-e 		enable interpretation of backslash escapes
+	-E 		disable interpretation of backslash escapes (default)
+	--help		display this page and exit

@@ -12,7 +12,7 @@ shell.c
     {
         - wait for background processes to do their thing
         - this is where we handle the strings (send them to a function for this?)
-        - error checking is done here (or in the parser)
+        - error checking is done here (or in the parser...probably in the parser)
     }
 
    
@@ -24,6 +24,8 @@ shell.c
         -create a multidimensional (at least 2d) array for chunks
     - check for piping (if there's a pipe, move to the next main index of the chunk array)
    
+    - This area is very much akin to one of the first programs that we wrote in this class (the command line arguments, etc.).
+
     - After parsing, we essentially go into:
     for (each "main index" of the chunk array)
     {
@@ -57,14 +59,19 @@ progs.c
 -man()
 {
     - include a man page for each of the functions that we're implementing
+    - Need new man pages for echo (works differently), cpuUsage, bash++, the extra Linux util.
 }
 -cpuUsage()
 {
     - determine how much CPU has been used (on average) over the last 24 hours.
+    - The current line of thinking is that this should be done using top to get a snapshot of the current CPU usage
+    - This should be done in the background every hour and added to a "rolling" log file that keeps track of the previous 24-hour period.
+    - This function would then, essentially, return an average of those values.
 }
 -bash++()
 {
     - our bash++ precompiler should go here.
+    - this will be corrected and will be using standard I/O instead of file I/O.
 }
 -extraLinuxUtil()
 {

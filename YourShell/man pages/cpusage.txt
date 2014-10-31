@@ -1,0 +1,19 @@
+cpusage			User Commands
+
+Name
+	cpusage - Display the average CPU usage of the past 24-hour period.
+
+Synopsis
+	cpusage [SHORT-OPTION]...
+
+Description
+
+	Displays the current average CPU usage of the past 24-hour period.
+
+	This is associated with a background process that uses the top command
+	to get a "snapshot" of the CPU usage every hour and log it. cpusage
+	is then able to access this log and return an averaged value from it.
+
+	Options are currently not implemented or decided upon.
+	-cL	clear log
+	--help	display this help page and exit 
