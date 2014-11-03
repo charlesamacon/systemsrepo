@@ -5,6 +5,7 @@
 #include <sys/types.h>
 #include <sys/socket.h>
 #include <netinet/in.h>
+#include <time.h>
 #include <netdb.h> 
 
 void error(const char *msg)
@@ -18,7 +19,8 @@ int main(int argc, char *argv[])
     int sockfd, portno, n;
     struct sockaddr_in serv_addr;
     struct hostent *server;
-
+	srand(time(NULL));
+	
     char buffer[256];
     if (argc < 3) {
        fprintf(stderr,"usage %s hostname port\n", argv[0]);
@@ -45,10 +47,29 @@ int main(int argc, char *argv[])
 	// THIS IS WHERE WE SEND THE BUY AND CANCEL COMMANDS.	
     printf("Please enter the message: ");
     bzero(buffer,256);
-    fgets(buffer,255,stdin);
-    n = write(sockfd,buffer,strlen(buffer));
-    if (n < 0) 
+    //fgets(buffer,255,stdin);
+	
+	int i;
+	
+	for (i = 0; i < 10; i++)
+	{
+		int r = (rand() % 10);
+		
+		if (r == 9)
+		{
+			buffer = 'c';
+		}
+		else
+		{
+			buffer = 'b';
+		}
+		
+		n = write(sockfd,buffer,strlen(buffer));
+		if (n < 0) 
          error("ERROR writing to socket");
+	}
+	
+
 	
 	
 	// THIS IS WHERE WE GET MESSAGES BACK FROM THE SERVER

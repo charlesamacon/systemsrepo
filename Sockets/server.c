@@ -62,12 +62,27 @@ int main(int argc, char *argv[])
      n = read(newsockfd,buffer,255);
      if (n < 0) error("ERROR reading from socket");
 	 
-     printf("Here is the message: %s\n",buffer);
-     n = write(newsockfd,"I got your message",18);
-	 if (n < 0) error("ERROR writing to socket");
-	 
-	 // THIS IS THE GENERAL AREA WHERE THINGS SHOULD HAPPEN.
-		// RIGHT AROUND HERE SOMEWHERE
+	 // Buy order or cancel order.
+	 else if (n == 'b')
+	 {
+		// buy logic
+		printf("Buy order processed\n");
+		n = write(newsockfd,"Buy order processed",19);
+		if (n < 0) error("ERROR writing to socket");
+	 }
+	 else if (n == 'c')
+	 {
+		// cancel order logic
+		printf("Order cancelled\n");
+		n = write(newsockfd,"Order cancelled",15);
+		if (n < 0) error("ERROR writing to socket");
+	 }
+	 else
+	 {
+		printf("ERROR: Unknown Command\n");
+		n = write(newsockfd,"ERROR: Unknown Command",22);
+		if (n < 0) error("ERROR writing to socket");
+	 }
 	 
 	 // CLEANUP
      close(newsockfd);
