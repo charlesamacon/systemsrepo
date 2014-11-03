@@ -1,3 +1,9 @@
+Group 13
+Garrett Wescott
+Charles A. Macon
+Jordan Sanders
+Julie Quiroz
+
 Very basically:
 
 shell.c
