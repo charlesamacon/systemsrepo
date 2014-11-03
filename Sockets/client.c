@@ -20,12 +20,15 @@ int main(int argc, char *argv[])
     struct sockaddr_in serv_addr;
     struct hostent *server;
 	srand(time(NULL));
+	int i;
+	int tickets[10];
 	
     char buffer[256];
     if (argc < 3) {
        fprintf(stderr,"usage %s hostname port\n", argv[0]);
        exit(0);
     }
+	for(i=0;i<10;i++){
     portno = atoi(argv[2]);
     sockfd = socket(AF_INET, SOCK_STREAM, 0);
     if (sockfd < 0) 
@@ -45,39 +48,36 @@ int main(int argc, char *argv[])
         error("ERROR connecting");
 		
 	// THIS IS WHERE WE SEND THE BUY AND CANCEL COMMANDS.	
-    printf("Please enter the message: ");
     bzero(buffer,256);
-    //fgets(buffer,255,stdin);
 	
-	int i;
-	
-	for (i = 0; i < 10; i++)
-	{
 		int r = (rand() % 10);
-		
 		if (r == 9)
 		{
-			buffer = 'c';
+			buffer[0] = 'c';
+			printf("Cancelled\n");
 		}
 		else
 		{
-			buffer = 'b';
+			buffer[0] = 'b';
+			printf("Bought\n");
 		}
 		
 		n = write(sockfd,buffer,strlen(buffer));
 		if (n < 0) 
          error("ERROR writing to socket");
+		 
+		// THIS IS WHERE WE GET MESSAGES BACK FROM THE SERVER
+		bzero(buffer,256);
+		n = read(sockfd,buffer,255);
+		if (n < 0) 
+			 error("ERROR reading from socket");
+		if(buffer[0]= 'B'){
+		
+		}
+			
+		printf("%s\n",buffer);
+		bzero(buffer,256);	
 	}
-	
-
-	
-	
-	// THIS IS WHERE WE GET MESSAGES BACK FROM THE SERVER
-    bzero(buffer,256);
-    n = read(sockfd,buffer,255);
-    if (n < 0) 
-         error("ERROR reading from socket");
-    printf("%s\n",buffer);
 	
 	// CLEANUP
     close(sockfd);
