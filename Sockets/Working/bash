@@ -1,0 +1,5 @@
+#!/bin/bash
+gcc server2.c -o server
+gcc client.c -o client
+./server 17286 &
+./client cse04 17286
