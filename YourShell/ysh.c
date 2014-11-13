@@ -10,6 +10,8 @@
 #include <sys/stat.h>
 #include <fcntl.h>
 
+#include "progs.h"
+
 extern int errno;
 
 typedef void (*sighandler_t)(int);
@@ -176,32 +178,48 @@ int main(int argc, char *argv[], char *envp[])
     while(c != EOF) {
         c = getchar();
         switch(c) {
-            case '\n': if(tmp[0] == '\0') {
-                       printf("[MY_SHELL ] ");
-                   } else {
-                       fill_argv(tmp);
-                       strncpy(cmd, my_argv[0], strlen(my_argv[0]));
-                       strncat(cmd, "\0", 1);
-                       if(index(cmd, '/') == NULL) {
-                           if(attach_path(cmd) == 0) {
-                               call_execve(cmd);
-                           } else {
-                               printf("%s: command not found\n", cmd);
-                           }
-                       } else {
-                           if((fd = open(cmd, O_RDONLY)) > 0) {
+            case '\n': if(tmp[0] == '\0') 
+						{
+							printf("[MY_SHELL ] ");
+						} 
+					   else 
+					   {
+							fill_argv(tmp);
+							strncpy(cmd, my_argv[0], strlen(my_argv[0]));
+							strncat(cmd, "\0", 1);
+							
+							if(index(cmd, '/') == NULL)		
+							{
+								if(attach_path(cmd) == 0) 
+								{
+									call_execve(cmd);
+								} 
+								else 
+								{
+									printf("%s: command not found\n", cmd);
+								}
+							} 
+						else 
+						{
+                           if((fd = open(cmd, O_RDONLY)) > 0) 
+						   {
                                close(fd);
                                call_execve(cmd);
-                           } else {
+                           } 
+						   else 
+						   {
                                printf("%s: command not found\n", cmd);
                            }
                        }
+
                        free_argv();
                        printf("[MY_SHELL ] ");
                        bzero(cmd, 100);
                    }
+
                    bzero(tmp, 100);
                    break;
+
             default: strncat(tmp, &c, 1);
                  break;
         }
