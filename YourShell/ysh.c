@@ -153,7 +153,14 @@ void free_argv()
 int main(int argc, char *argv[], char *envp[])
 {
     char c;
-    int i, fd;
+	int i;
+	int fd[2];
+
+	// Piping stuff
+	pid_t childpid;
+	pipe(fd);
+
+
     char *tmp = (char *)malloc(sizeof(char) * 100);
     char *path_str = (char *)malloc(sizeof(char) * 256);
     char *cmd = (char *)malloc(sizeof(char) * 100);
@@ -201,9 +208,9 @@ int main(int argc, char *argv[], char *envp[])
 							} 
 						else 
 						{
-                           if((fd = open(cmd, O_RDONLY)) > 0) 
+                           if((fd[1] = open(cmd, O_RDONLY)) > 0) 
 						   {
-                               close(fd);
+                               close(fd[1]);
                                call_execve(cmd);
                            } 
 						   else 
