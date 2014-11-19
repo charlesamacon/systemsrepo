@@ -46,13 +46,27 @@ int tokenizer(char *c, char *argv[])
 // Echo
 void echo(char *argv[], int argc)
 {
-	// Use printf to print arguments. If a $ is encountered, what follows should be made a variable.
-	int i = 0;
+	// Use printf to print arguments.
+	int i = 1;
 
-	for (i; i < argc, i++)
+	for (i; i < argc - 1, i++)
 	{
-		printf("%s", argv[i]);			// This line is crap and doesn't help us.
+		printf("%s%s", argv[i], " ");
 	}
+
+	printf("%s%s", argv[argc - 1], " ");
+
+
+	// Basically, we need the ability to assign variables values. We need to create a 2-Dimensional array for variables
+	// The user should be able to type "variable=2" and then "echo $variable" and ysh should output "2".
+	// So we just need echo to check that variable list, and if the variable exists, it outputs whatever.
+
+	// Seems simple enough:
+	// In YSH.c, create 2D array for variables and their data.
+	// Pass this array (or a pointer to it, at least) to echo.
+	// If there are any strings in *argv[] that start with $, check the rest of that string to all variables stored in the array.
+	// If it exists, output its value.
+	// Otherwise, output an error message.
 
 	return;
 }
