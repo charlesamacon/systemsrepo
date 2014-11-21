@@ -57,109 +57,165 @@ void fill_argv(char *tmp_argv)
 
 void copy_envp(char **envp)
 {
-    int index = 0;
-    for(;envp[index] != NULL; index++) {
-        my_envp[index] = (char *)
+int index = 0;
+for (; envp[index] != NULL; index++) {
+	my_envp[index] = (char *)
 		malloc(sizeof(char) * (strlen(envp[index]) + 1));
-        memcpy(my_envp[index], envp[index], strlen(envp[index]));
-    }
+	memcpy(my_envp[index], envp[index], strlen(envp[index]));
+}
 }
 
 void get_path_string(char **tmp_envp, char *bin_path)
 {
-    int count = 0;
-    char *tmp;
-    while(1) {
-        tmp = strstr(tmp_envp[count], "PATH");
-        if(tmp == NULL) {
-            count++;
-        } else {
-            break;
-        }
-    }
-        strncpy(bin_path, tmp, strlen(tmp));
+	int count = 0;
+	char *tmp;
+	while (1) {
+		tmp = strstr(tmp_envp[count], "PATH");
+		if (tmp == NULL) {
+			count++;
+		}
+		else {
+			break;
+		}
+	}
+	strncpy(bin_path, tmp, strlen(tmp));
 }
 
-void insert_path_str_to_search(char *path_str) 
+void insert_path_str_to_search(char *path_str)
 {
-    int index=0;
-    char *tmp = path_str;
-    char ret[100];
+	int index = 0;
+	char *tmp = path_str;
+	char ret[100];
 
-    while(*tmp != '=')
-        tmp++;
-    tmp++;
+	while (*tmp != '=')
+		tmp++;
+	tmp++;
 
-    while(*tmp != '\0') {
-        if(*tmp == ':') {
-            strncat(ret, "/", 1);
-            search_path[index] = 
-		(char *) malloc(sizeof(char) * (strlen(ret) + 1));
-            strncat(search_path[index], ret, strlen(ret));
-            strncat(search_path[index], "\0", 1);
-            index++;
-            bzero(ret, 100);
-        } else {
-            strncat(ret, tmp, 1);
-        }
-        tmp++;
-    }
+	while (*tmp != '\0') {
+		if (*tmp == ':') {
+			strncat(ret, "/", 1);
+			search_path[index] =
+				(char *)malloc(sizeof(char) * (strlen(ret) + 1));
+			strncat(search_path[index], ret, strlen(ret));
+			strncat(search_path[index], "\0", 1);
+			index++;
+			bzero(ret, 100);
+		}
+		else {
+			strncat(ret, tmp, 1);
+		}
+		tmp++;
+	}
 }
 
 int attach_path(char *cmd)
 {
-    char ret[100];
-    int index;
-    int fd;
-    bzero(ret, 100);
-    for(index=0;search_path[index]!=NULL;index++) {
-        strcpy(ret, search_path[index]);
-        strncat(ret, cmd, strlen(cmd));
-        if((fd = open(ret, O_RDONLY)) > 0) {
-            strncpy(cmd, ret, strlen(ret));
-            close(fd);
-            return 0;
-        }
-    }
-    return 0;
+	char ret[100];
+	int index;
+	int fd;
+	bzero(ret, 100);
+	for (index = 0; search_path[index] != NULL; index++) {
+		strcpy(ret, search_path[index]);
+		strncat(ret, cmd, strlen(cmd));
+		if ((fd = open(ret, O_RDONLY)) > 0) {
+			strncpy(cmd, ret, strlen(ret));
+			close(fd);
+			return 0;
+		}
+	}
+	return 0;
 }
 
 void call_execve(char *cmd)
 {
-    int i;
-    printf("cmd is %s\n", cmd);
-    if(fork() == 0) {
-        i = execve(cmd, my_argv, my_envp);
-        printf("errno is %d\n", errno);
-        if(i < 0) {
-            printf("%s: %s\n", cmd, "command not found");
-            exit(1);        
-        }
-    } else {
-        wait(NULL);
-    }
+	int i;
+	printf("cmd is %s\n", cmd);
+	if (fork() == 0) {
+		i = execve(cmd, my_argv, my_envp);
+		printf("errno is %d\n", errno);
+		if (i < 0) {
+			printf("%s: %s\n", cmd, "command not found");
+			exit(1);
+		}
+	}
+	else {
+		wait(NULL);
+	}
 }
 
 void free_argv()
 {
-    int index;
-    for(index=0;my_argv[index]!=NULL;index++) {
-        bzero(my_argv[index], strlen(my_argv[index])+1);
-        my_argv[index] = NULL;
-        free(my_argv[index]);
-    }
+	int index;
+	for (index = 0; my_argv[index] != NULL; index++) {
+		bzero(my_argv[index], strlen(my_argv[index]) + 1);
+		my_argv[index] = NULL;
+		free(my_argv[index]);
+	}
+}
+
+void execute_pipe(char *argv[], char *args[])
+{
+	// Piping Stuff
+	int pfds[2];
+	pid_t pid1, pid2;
+	int status1, status2;
+
+	pipe(pfds);
+
+	if ((pid1 = fork())) < 0)
+	{
+		printf("Error: Forking Child Failed\n");
+		exit(1);
+
+		if ((pid2 = fork()) < 0)
+		{
+			printf("Error: Forking Child Failed\n");
+			exit(1);
+		}
+	}
+
+	if (pid == 0)
+	{
+		close(1);
+		dup(pfds[1]);
+		
+		//Close in this order.
+		close(pfds[0]);
+		close(pfds[1]);
+
+		if (execvp(argv[0], argv) < 0)
+		{
+			printf("Error: Executing\n");
+		}
+	}
+	else if (pid2 == 0)
+	{
+		close(0);
+		dup(pfds[0]);
+
+		// Close in this other order.
+		close(pfds[0]);
+		close(pfds[1]);
+
+		if (execvp(args[0], args) < 0)
+		{
+			printf("Error: Executing\n");
+		}
+	}
+	else
+	{
+		close(pfds[0]);
+		close(pfds[1]);
+
+		while (wait(&status1) != pid);
+		while (wait(&status2) != pid2);
+	}
 }
 
 int main(int argc, char *argv[], char *envp[])
 {
     char c;
 	int i;
-	int fd[2];
-
-	// Piping stuff
-	pid_t childpid;
-	pipe(fd);
-
 
     char *tmp = (char *)malloc(sizeof(char) * 100);
     char *path_str = (char *)malloc(sizeof(char) * 256);
@@ -210,7 +266,7 @@ int main(int argc, char *argv[], char *envp[])
 						{
                            if((fd[1] = open(cmd, O_RDONLY)) > 0) 
 						   {
-                               close(fd[1]);
+                               close(fd);
                                call_execve(cmd);
                            } 
 						   else 
