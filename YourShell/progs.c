@@ -284,10 +284,70 @@ void superBash(int argc, char * argv[])
 }
 
 // Extra Linux Util
-void util()
-{
-	// We should probably decide this soon.
-	return;
+int* charToBinary(char var){
+	int arr[7],bit,temp,i;
+	temp = var;
+	
+	for(i=6;i>=0;i--){
+		bit = temp%2;
+		temp = temp/2;
+		arr[i] = bit;
+	}
+	return arr;
+}
+
+int** strToBinary(char* str){
+	int i,k;
+    int len = strlen(str);
+    int** arr = (int **)malloc(len * sizeof(int *));
+	for(i=0;i<len;i++) arr[i] = (int *)malloc(7*sizeof(int));
+	
+    int* tempArr = charToBinary('a');
+	
+    for(i=0;i<len;i++){
+		tempArr = charToBinary(str[i]);
+        for(k=0;k<7;k++){
+            arr[i][k] = *(tempArr+k);
+        }
+	}
+	
+	/* PRINTS OUT BINARY STRING
+	for(i=0;i<len;i++){
+		for(k=0;k<7;k++){
+			printf("%d",arr[i][k]);
+		}
+		printf(" ");
+	}
+	*/
+	return arr;
+	
+}
+
+//2 strings are xor'd character by character, goes by shorter string length
+void xorBinary(int** arr1, int** arr2,int size1, int size2){
+	int i,k;
+	int size;
+	if(size1 > size2) size = size2;
+	else size = size1;
+	
+	for(i=0;i<size;i++){
+		for(k=0;k<7;k++){
+			if(arr1[i][k] == arr2[i][k]) printf("0");
+			else printf("1");
+		}
+		printf(" ");
+	}
+
+}
+
+void printBinary(int** arr, int len){
+	int i,k;
+	for(i=0;i<len;i++){
+		for(k=0;k<7;k++){
+			printf("%d",arr[i][k]);
+		}
+		printf(" ");
+	}
 }
 
 // Redirect
