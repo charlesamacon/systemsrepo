@@ -169,6 +169,7 @@ void execute_pipe(char *argv[], char *args[])
 
 		if ((pid2 = fork()) < 0)
 		{
+			// We should only be forking it pid1 is non-Zero
 			printf("Error: Forking Child Failed\n");
 			exit(1);
 		}
@@ -211,6 +212,7 @@ void execute_pipe(char *argv[], char *args[])
 		while (wait(&status2) != pid2);
 	}
 }
+
 
 int main(int argc, char *argv[], char *envp[])
 {
@@ -255,6 +257,27 @@ int main(int argc, char *argv[], char *envp[])
 							{
 								if(attach_path(cmd) == 0) 
 								{
+									// if redirecting I/O
+
+									// Example:
+									// sort < input > output
+
+									// int in;
+									// int out;
+
+									// Input
+									// in = open("input", O_RDONLY);		// var "input" is what we're reading in from. O_RDONLY states that it should be read only
+									// do things with in (pass to command, whatever).
+									// dup(in, STDIN_FILENO);				// duplicate file descriptor, create new file descriptor that refers to the same file
+									// close(in);							// close in
+
+									
+
+									// Output
+									// out = open("output", O_WRONLY|O_CREAT,0666);		// var "output" is what we're writing to. O_WRONLY states we're only writing. O_CREAT means that if it doesn't exist, we create a file of specific permissions
+									// write(out, $VAR, strlen($VAR));					// write to file descriptor, $VAR is what we want to write, and strlen($VAR) is how long it is.
+									// dup2(out, STDOUT_FILENO);						// duplicate file descriptor
+									// close(out);										// close out
 									call_execve(cmd);
 								} 
 								else 
