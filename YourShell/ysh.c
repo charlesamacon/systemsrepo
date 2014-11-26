@@ -1,3 +1,5 @@
+// Group 13
+
 #include <stdio.h>
 #include <stdlib.h>
 #include <unistd.h>
@@ -155,7 +157,8 @@ void free_argv()
 
 void execute_pipe(char *argv[], char *args[])
 {
-	// Piping Stuff
+	// This is to be reworked by Jordan.
+	// While this is the general idea of the thing, a much simpler method was figured out on 11/25/2014.
 	int pfds[2];
 	pid_t pid1, pid2;
 	int status1, status2;
