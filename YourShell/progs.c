@@ -18,6 +18,7 @@ int tokenizer(char *c, char *argv[])
 	// This is so we can keep track of how many elements are actually in argv.
 	// I know we could get argc, but this keeps track of how many are actually USED
 	int i = 0;
+    char buffer[250][250];
 
 	while (*c && isspace(*c))
 	{
@@ -26,7 +27,7 @@ int tokenizer(char *c, char *argv[])
 	
 	while (*c && i < 255)	// Set the max number of arguments to a static number of 255 (I doubt we'll need more than that right now)
 	{
-		argv[i + 1] = buffer;
+		argv[i + 1] = buffer[i];
 
 		while (*c && !isspace(*c))
 		{
@@ -47,9 +48,8 @@ int tokenizer(char *c, char *argv[])
 void echo(char *argv[], int argc)
 {
 	// Use printf to print arguments.
-	int i = 1;
 
-	for (i; i < argc - 1, i++)
+    for (int i=1; i < argc - 1; i++)
 	{
 		printf("%s%s", argv[i], " ");
 	}

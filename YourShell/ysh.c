@@ -165,7 +165,7 @@ void execute_pipe(char *argv[], char *args[])
 
 	pipe(pfds);
 
-	if ((pid1 = fork())) < 0)
+	if ((pid1 = fork()) < 0)
 	{
 		printf("Error: Forking Child Failed\n");
 		exit(1);
@@ -178,7 +178,7 @@ void execute_pipe(char *argv[], char *args[])
 		}
 	}
 
-	if (pid == 0)
+	if (pid1 == 0)
 	{
 		close(1);
 		dup(pfds[1]);
@@ -211,7 +211,7 @@ void execute_pipe(char *argv[], char *args[])
 		close(pfds[0]);
 		close(pfds[1]);
 
-		while (wait(&status1) != pid);
+		while (wait(&status1) != pid1);
 		while (wait(&status2) != pid2);
 	}
 }
