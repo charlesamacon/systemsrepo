@@ -285,7 +285,8 @@ void superBash(int argc, char * argv[])
 
 // Extra Linux Util
 int* charToBinary(char var){
-	int arr[7],bit,temp,i;
+	int bit,temp,i;
+    int* arr = (int *)malloc(7 * (sizeof(int *)));
 	temp = var;
 	
 	for(i=6;i>=0;i--){
