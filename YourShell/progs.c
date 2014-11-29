@@ -5,6 +5,7 @@
 #include <string.h>
 #include <sys/wait.h>
 #include <sys/types.h>
+#include <sys/sysinfo.h>
 #include <ctype.h>
 #include <errno.h>
 #include <sys/stat.h>
@@ -143,6 +144,26 @@ void man(char *argv[])
 void cpusage()
 {
 	// Figure out a way to call Top.
+
+	// As far as I can find, there's not a log that's actually stored somewhere, so we might have to create one and run this as a background (I know, I know...)
+
+	struct sysinfo info;
+	unsigned long cpuLoad;
+	int error;
+
+	error = sysinfo(&info);
+	if (error != 0)
+	{
+		printf("Error = %d\n", error);
+	}
+
+	// Store this somewhere
+	cpuLoad = info.loads[2];		// This will return the 15 minute average
+
+	// So basically, we append that to the last line of some file.
+	// Then, if the file is longer than 96 lines (4 times each hour for 24 hours), we disregard the first line and rewrite the file.
+	// Then store the value of each line in an unsigned long array[# of lines], add them up, and divide by [number of lines] for our 24-hour average.
+	// While this won't immediately return a 24-hour average, it will at least return an average since the shell has been running.
 	return;
 }
 
