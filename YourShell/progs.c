@@ -49,8 +49,8 @@ int tokenizer(char *c, char *argv[])
 void echo(char *argv[], int argc)
 {
 	// Use printf to print arguments.
-
-    for (int i=1; i < argc - 1; i++)
+	int i;
+    for (i=1; i < argc - 1; i++)
 	{
 		printf("%s%s", argv[i], " ");
 	}
@@ -148,23 +148,74 @@ void cpusage()
 	// As far as I can find, there's not a log that's actually stored somewhere, so we might have to create one and run this as a background (I know, I know...)
 
 	struct sysinfo info;
-	unsigned long cpuLoad;
+	float cpuLoad;
 	int error;
-
+	int count = 0;
+	FILE *cpuStats;
+	char string[512];
+	char* stats;
 	error = sysinfo(&info);
+	int i = 0;
+	float total;
+	char percentFloat[5];
 	if (error != 0)
 	{
 		printf("Error = %d\n", error);
 	}
 
-	// Store this somewhere
-	cpuLoad = info.loads[2];		// This will return the 15 minute average
-
+	// Stores cpu load values to a file that is structured so the first value is the average cpu 
+	// load over time its been running, all following values are previous loads at 15 minute intervals
+	// maxmium stored values is 97, 1 overall average and 96 15 minute averages
+	
+	while(1){
+		cpuStats = fopen("cpuLoad","r"); // Opens cpuLoad where all recorded loads are stored
+		total=0;
+		
+		while((c = fgetc(cpuStats)) != EOF){ //Writes entire file to string
+			string[i++] = c;
+		}
+		
+		stats = strtok(string," "); //Tokenizes string into smaller strings containing the load values
+		
+		percents[count++] = strtof(stats); //Turns the value strings into floats and stores them in an array
+		while(stats != NULL){
+			stats = strtok(NULL," ");
+			percents[count++] = strtof(stats);
+		}
+		
+		i=1;
+		while(i<count) total+= percents[i]; //Calculates total of all floats
+		fclose(cpuStats); 
+		cpuStats = fopen("cpuLoad","w"); //Destroys old cpuLoad file and opens a new one
+		
+		sprintf(percentFloat,"%f",total/(count-1)); //Converts float to string so it can be written to file
+		fputc(total/(count-1))
+		i=2;
+		while(i<97 && i < count){
+			fputc(' ');
+			sprintf(percentFloat,"%f",percents[i]);
+			fputs(percentFloat);
+			i++;
+		}
+		cpuLoad = info.loads[2];
+		sprintf(percentFloat,"%f",cpuLoad);
+		fputc(' ');
+		fputs(percentFloat);
+		fclose("cpuLoad");
+		// This will return the 15 minute average
+		sleep(60*15);
+	}
 	// So basically, we append that to the last line of some file.
 	// Then, if the file is longer than 96 lines (4 times each hour for 24 hours), we disregard the first line and rewrite the file.
 	// Then store the value of each line in an unsigned long array[# of lines], add them up, and divide by [number of lines] for our 24-hour average.
 	// While this won't immediately return a 24-hour average, it will at least return an average since the shell has been running.
 	return;
+}
+
+float cpuAverage(){ //Returns first float of the file cpuLoad
+	
+
+
 }
 
 // SuperBash
