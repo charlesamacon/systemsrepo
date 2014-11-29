@@ -130,18 +130,57 @@ int attach_path(char *cmd)
 
 void call_execve(char *cmd)
 {
+	//printf("cmd is %s\n", cmd);
+	//if (fork() == 0) {
+	//	i = execve(cmd, my_argv, my_envp);
+	//	printf("errno is %d\n", errno);
+	//	if (i < 0) {
+	//		printf("%s: %s\n", cmd, "command not found");
+	//		exit(1);
+	//	}
+	//}
+	//else {
+	//	wait(NULL);
+	//}
+
 	int i;
-	printf("cmd is %s\n", cmd);
-	if (fork() == 0) {
+	pid_t pid;
+	int status;
+
+	switch (pid = fork())
+	{	
+	case -1:				// Error
+		printf("errno is %d\n", errno);	
+		break;
+	case 0:					// Fork Succeeded
 		i = execve(cmd, my_argv, my_envp);
-		printf("errno is %d\n", errno);
-		if (i < 0) {
+		if (i < 0)
+		{
 			printf("%s: %s\n", cmd, "command not found");
-			exit(1);
+			exit(1);	// Parent exits
+		}
+		else
+		{
+			wait(%status);	// Fork() returns new pid to parent
 		}
 	}
-	else {
-		wait(NULL);
+
+	// We are not checking waitpid here, so essentially every parent runs independently of its child. Essentially, it's in the background here.
+
+	printf("Process ID %d\n", (int)pid);
+
+	return;
+}
+
+// From gnu.org/software/libc/manual/html_node/Foreground-and-Background.html
+void put_job_in_background(job *j, int cont)
+{
+	if (cont)
+	{
+		if (kill(-j->pgid, SIGCONT) < 0)
+		{
+			perror("kill (SIGCONT)");
+		}
 	}
 }
 
@@ -168,12 +207,12 @@ void execute_pipe(char *argv[], char *args[])
 	// if (fork())
 	// {
 	//		dup2(fds[1], STDOUT_FILENO);
-	//		execlp("COMMAND FROM ARGV", "COMMAND FROM ARGV", NULL);
+	//		call_execve(COMMAND FROM ARGV);
 	// }
 	// else
 	// {
 	//		dup2(fds[0], STDIN_FILENO);
-	//		execlp("COMMAND FROM ARGV", "COMMAND FROM ARGV", NULL);
+	//		call_exceve(COMMAND FROM ARGV);
 	// }
 
 	// return;
