@@ -159,61 +159,24 @@ void execute_pipe(char *argv[], char *args[])
 {
 	// This is to be reworked by Jordan.
 	// While this is the general idea of the thing, a much simpler method was figured out on 11/25/2014.
-	int pfds[2];
-	pid_t pid1, pid2;
-	int status1, status2;
+	
+	// Not 100% sure on this, so its commented
 
-	pipe(pfds);
+	// int fds[2];
+	// pipe(fds);
 
-	if ((pid1 = fork()) < 0)
-	{
-		printf("Error: Forking Child Failed\n");
-		exit(1);
+	// if (fork())
+	// {
+	//		dup2(fds[1], STDOUT_FILENO);
+	//		execlp("COMMAND FROM ARGV", "COMMAND FROM ARGV", NULL);
+	// }
+	// else
+	// {
+	//		dup2(fds[0], STDIN_FILENO);
+	//		execlp("COMMAND FROM ARGV", "COMMAND FROM ARGV", NULL);
+	// }
 
-		if ((pid2 = fork()) < 0)
-		{
-			// We should only be forking it pid1 is non-Zero
-			printf("Error: Forking Child Failed\n");
-			exit(1);
-		}
-	}
-
-	if (pid1 == 0)
-	{
-		close(1);
-		dup(pfds[1]);
-		
-		//Close in this order.
-		close(pfds[0]);
-		close(pfds[1]);
-
-		if (execvp(argv[0], argv) < 0)
-		{
-			printf("Error: Executing\n");
-		}
-	}
-	else if (pid2 == 0)
-	{
-		close(0);
-		dup(pfds[0]);
-
-		// Close in this other order.
-		close(pfds[0]);
-		close(pfds[1]);
-
-		if (execvp(args[0], args) < 0)
-		{
-			printf("Error: Executing\n");
-		}
-	}
-	else
-	{
-		close(pfds[0]);
-		close(pfds[1]);
-
-		while (wait(&status1) != pid1);
-		while (wait(&status2) != pid2);
-	}
+	// return;
 }
 
 
