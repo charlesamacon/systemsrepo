@@ -143,6 +143,9 @@ void call_execve(char *cmd)
 	//	wait(NULL);
 	//}
 
+	// We might need to create another function to call execve when we're trying to put a command in the background.
+	// Basically, we should check if the last "command" in argv is an "&". If so, it should be a background process.
+
 	int i;
 	pid_t pid;
 	int status;
