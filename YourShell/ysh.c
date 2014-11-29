@@ -161,11 +161,9 @@ void call_execve(char *cmd)
 		}
 		else
 		{
-			wait(%status);	// Fork() returns new pid to parent
+			waitpid(%status);	// Fork() returns new pid to parent
 		}
 	}
-
-	// We are not checking waitpid here, so essentially every parent runs independently of its child. Essentially, it's in the background here.
 
 	printf("Process ID %d\n", (int)pid);
 
