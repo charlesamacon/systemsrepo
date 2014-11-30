@@ -76,7 +76,10 @@ void echo(char *argv[], int argc)
 
 			for (k = 0; k < 15; k++)
 			{
-				buffer[k] = argv[i][k];
+				if (argv[i][k] != NULL)
+				{
+					buffer[k] = argv[i][k];
+				}
 			}
 
 			for (j = 0; j < 100; j++)
@@ -104,7 +107,7 @@ void echo(char *argv[], int argc)
 }
 
 // Man
-void man(char *argv[])
+void man(char argv[])
 {
 	// Output text files based on the argument name
 	// I'm thinking this should be done as simply as possible
@@ -112,60 +115,68 @@ void man(char *argv[])
 	char man[50];
 
 	// copy command from argv[] to man[]
+	int i;
+	for (i = 0; i < 50; i++)
+	{
+		if (argv[i] != NULL)
+		{
+			man[i] = argv[i];
+		}
+	}
 
-	// if (man == "echo")
-	//{
-	//	printf("ECHO			User Commands\n\n"
-	//		"Name\n"
-	//		"echo - display a line of text\n\n"
-	//		"Synopsis\n"
-	//		"echo[SHORT - OPTION]...[STRING]...\n"
-	//		"echo LONG - OPTION\n\n"
-	//		"Description\n\n"
-	//		"Echo the STRING(s) to standard output.\n\n"
-	//		"- n		do not output the trailing newline\n"
-	//		"- e 		enable interpretation of backslash escapes\n"
-	//		"- E 		disable interpretation of backslash escapes(default)\n"
-	//		"--help		display this page and exit\n");
-	//}
-	//else if (man == "cpusage")
-	//{
-	//	printf("cpusage			User Commands\n\n"
-	//		"Name\n"
-	//		"cpusage - Display the average CPU usage of the past 24 - hour period.\n\n"
-	//		"Synopsis\n"
-	//		"cpusage[SHORT - OPTION]...\n\n"
-	//		"Description\n\n"
-	//		"Displays the current average CPU usage of the past 24 - hour period.\n\n"
-	//		"This is associated with a background process that uses the top command\n"
-	//		"to get a 'snapshot' of the CPU usage every hour and log it.cpusage\n"
-	//		"is then able to access this log and return an averaged value from it.\n\n"
-	//		"Options are currently not implemented or decided upon.\n"
-	//		"- cL	clear log\n"
-	//		"--help	display this help page and exit\n")
-	//}
-	//else if (man == "man")
-	//{
-	//	printf("man			User Commands\n\n"
-	//		"Name\n"
-	//		"man - displays the manual page for a given command\n\n"
-	//		"Synopsis\n"
-	//		"man[SHORT - OPTION]...\n\n"
-	//		"Description\n\n"
-	//		"man is the system's manual pager. Each page argument given to man is\n"
-	//		"normally the name of a program, utility or function.The manual page\n"
-	//		"associated with each of these arguments is then found and displayed.\n\n"
-	//		"For the time being, this version of man will display the entire manual\n"
-	//		"page for a given command. Whether or not this will persist in the final\n"
-	//		"project remains to be seen. Short, sweet, and to the point right now.\n\n"
-	//		"Currently implemented man pages :\n"
-	//		"echo\n"
-	//		"cpusage\n"
-	//		"man\n\n"
-	//		"Examples\n\n"
-	//		"man ls\n"
-	//		"Display the manual page for the program ls.\n")
-	//}
+	if (strcmp(man, "echo"))
+	{
+		printf("ECHO			User Commands\n\n"
+			"Name\n"
+			"echo - display a line of text\n\n"
+			"Synopsis\n"
+			"echo[SHORT - OPTION]...[STRING]...\n"
+			"echo LONG - OPTION\n\n"
+			"Description\n\n"
+			"Echo the STRING(s) to standard output.\n\n"
+			"- n		do not output the trailing newline\n"
+			"- e 		enable interpretation of backslash escapes\n"
+			"- E 		disable interpretation of backslash escapes(default)\n"
+			"--help		display this page and exit\n");
+	}
+	else if (strcmp(man, "cpusage"))
+	{
+		printf("cpusage			User Commands\n\n"
+			"Name\n"
+			"cpusage - Display the average CPU usage of the past 24 - hour period.\n\n"
+			"Synopsis\n"
+			"cpusage[SHORT - OPTION]...\n\n"
+			"Description\n\n"
+			"Displays the current average CPU usage of the past 24 - hour period.\n\n"
+			"This is associated with a background process that uses the top command\n"
+			"to get a 'snapshot' of the CPU usage every hour and log it.cpusage\n"
+			"is then able to access this log and return an averaged value from it.\n\n"
+			"Options are currently not implemented or decided upon.\n"
+			"- cL	clear log\n"
+			"--help	display this help page and exit\n")
+	}
+	else if (strcmp(man, "man"))
+	{
+		printf("man			User Commands\n\n"
+			"Name\n"
+			"man - displays the manual page for a given command\n\n"
+			"Synopsis\n"
+			"man[SHORT - OPTION]...\n\n"
+			"Description\n\n"
+			"man is the system's manual pager. Each page argument given to man is\n"
+			"normally the name of a program, utility or function.The manual page\n"
+			"associated with each of these arguments is then found and displayed.\n\n"
+			"For the time being, this version of man will display the entire manual\n"
+			"page for a given command. Whether or not this will persist in the final\n"
+			"project remains to be seen. Short, sweet, and to the point right now.\n\n"
+			"Currently implemented man pages :\n"
+			"echo\n"
+			"cpusage\n"
+			"man\n\n"
+			"Examples\n\n"
+			"man ls\n"
+			"Display the manual page for the program ls.\n")
+	}
 
 
 	return;
