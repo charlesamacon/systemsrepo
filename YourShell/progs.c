@@ -13,6 +13,8 @@
 
 #include "progs.h"
 
+extern static char *my_var[100];			// for echo to have access to.
+
 // Tokenizer 2000
 int tokenizer(char *c, char *argv[])
 {

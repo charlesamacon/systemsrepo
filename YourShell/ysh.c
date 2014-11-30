@@ -17,7 +17,7 @@
 extern int errno;
 
 typedef void (*sighandler_t)(int);
-static char *my_argv[100], *my_envp[100];
+static char *my_argv[100], *my_envp[100], *my_var[100];			// Added array for variables (for echo to use)
 static char *search_path[10];
 
 void handle_signal(int signo)
@@ -130,45 +130,71 @@ int attach_path(char *cmd)
 
 void call_execve(char *cmd)
 {
-	//printf("cmd is %s\n", cmd);
-	//if (fork() == 0) {
-	//	i = execve(cmd, my_argv, my_envp);
-	//	printf("errno is %d\n", errno);
-	//	if (i < 0) {
-	//		printf("%s: %s\n", cmd, "command not found");
-	//		exit(1);
-	//	}
-	//}
-	//else {
-	//	wait(NULL);
-	//}
+	// Only run if last command in argv is not '&'
+	printf("cmd is %s\n", cmd);
+	if (fork() == 0) {
+		if (cmd == "cpuUsage")	// Might need to do a strcmp instead.
+		{
+			//cpUsage();		// Just a stub right now, but basically this is how YSH should handle processes that are non-standard unix command, INCLUDING echo.
+		}
+		else if (cmd == "echo")	// Again, strcmp?
+		{
+			//echo(*argv[], argc);
+		}
+		else
+		{
+			i = execve(cmd, my_argv, my_envp);
+			printf("errno is %d\n", errno);
+			if (i < 0) {
+				printf("%s: %s\n", cmd, "command not found");
+				exit(1);
+			}
+		}
+	}
+	else {
+		wait(NULL);
+	}
+}
 
-	// We might need to create another function to call execve when we're trying to put a command in the background.
-	// Basically, we should check if the last "command" in argv is an "&". If so, it should be a background process.
+void call_execve_background(char *cmd)
+{
+	// Basically just seperates Parent process and Child Process
 
+	// Only run if last command in argv is '&'
 	int i;
 	pid_t pid;
 	int status;
 
 	switch (pid = fork())
-	{	
-	case -1:				// Error
-		printf("errno is %d\n", errno);	
+	{
+	case -1:	// Error
+		printf("Errno is %d\n", errno);
 		break;
-	case 0:					// Fork Succeeded
-		i = execve(cmd, my_argv, my_envp);
-		if (i < 0)
+	case 0:
+		if (cmd == "cpuUsage")	// Might need to do a strcmp instead
 		{
-			printf("%s: %s\n", cmd, "command not found");
-			exit(1);	// Parent exits
+			//cpUsage();		// Just a stub right now, but basically this is how YSH should handle processes that are non-standard unix command, INCLUDING echo.
+		}
+		else if (cmd == "echo")	// Again, strcmp?
+		{
+			//echo(*argv[], argc);
 		}
 		else
 		{
-			waitpid(%status);	// Fork() returns new pid to parent
+			i = execve(cmd, my_argv, my_envp);
+			if (i < 0)
+			{
+				printf("%s: %s\n", cmd, "command not found");
+				exit(1);
+			}
+			else
+			{
+				waitpid(%status);	// Fork() returns new pid to parent
+			}
 		}
 	}
 
-	printf("Process ID %d\n", (int)pid);
+	printf("Process ID %d\n" (int)pid);
 
 	return;
 }
