@@ -52,14 +52,44 @@ void echo(char *argv[], int argc)
 {
 	// Use printf to print arguments.
 	int i;
-    for (i=1; i < argc - 1; i++)
+	int err = 0;
+	int j;
+
+	for (i = 1; i < argc - 1; i++)
 	{
-		printf("%s%s", argv[i], " ");
+		if (argv[i][0] == '$')
+		{
+			err = 1;
+			char buffer[15];
+
+			int k;
+
+			for (k = 0; k < 15; k++)
+			{
+				buffer[k] = argv[i][k];
+			}
+
+			for (j = 0; j < 100; j++)
+			{
+				if (strcmp(buffer, my_var[i]))
+				{
+					printf("%s%s", my_var[i], " ");
+					err = 0;
+				}
+			}
+
+			if (err == 1)
+			{
+				printf("Error: Unrecognized Variable\n");
+			}
+		}
+		else if (err = 0)
+		{
+			printf("%s%s", argv[i], " ");
+		}
 	}
 
 	printf("%s%s", argv[argc - 1], " ");
-
-
 	// Basically, we need the ability to assign variables values. We need to create a 2-Dimensional array for variables
 	// The user should be able to type "variable=2" and then "echo $variable" and ysh should output "2".
 	// So we just need echo to check that variable list, and if the variable exists, it outputs whatever.
