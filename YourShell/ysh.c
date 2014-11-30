@@ -221,6 +221,23 @@ void free_argv()
 	}
 }
 
+void assign_variable(char *var, char value)
+{
+	int i = 0;
+
+	for (i; i < 100; i++)
+	{
+		if (my_var[i] == NULL)
+		{
+			// This doesn't make sense, and I'm exhausted from work. Can anyone pick this up? Basically, we need to store var and its value, but I can't put 2 and 2 together right now.
+			my_var[i] = var;
+			my_var[i][0] = value;
+			break;
+		}
+
+	}
+}
+
 void execute_pipe(char *argv[], char *args[])
 {
 	// This is to be reworked by Jordan.
