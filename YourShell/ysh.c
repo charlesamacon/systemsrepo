@@ -17,8 +17,14 @@
 extern int errno;
 
 typedef void (*sighandler_t)(int);
+typedef struct variable
+{
+	char varName[25];
+	char varData[25];
+};
 static char *my_argv[100], *my_envp[100], *my_var[100];			// Added array for variables (for echo to use)
 static char *search_path[10];
+static variable myvar[100];
 
 void handle_signal(int signo)
 {
@@ -223,19 +229,85 @@ void free_argv()
 
 void assign_variable(char *var, char value)
 {
+	// This should only be called when there is an = in the command line
+	// Example:
+	// MY_SHELL> var = value
+	// This should store var in myvar[i].varName and value in myvar[i].varData.
+	// We are then able to manipulate said data in echo (which is being moved over to this file to keep from messing with externs).
 	int i = 0;
 
 	for (i; i < 100; i++)
 	{
-		if (my_var[i] == NULL)
+		if (myvar[i] == NULL)
 		{
 			// This doesn't make sense, and I'm exhausted from work. Can anyone pick this up? Basically, we need to store var and its value, but I can't put 2 and 2 together right now.
-			my_var[i] = var;
-			my_var[i][0] = value;
+			strncpy(myvar[i].varName, var);
+			strncpy(myvar[i].varData, value);
+			//my_var[i].var = var;
+			//my_var[i][0] = value;
 			break;
 		}
 
 	}
+}
+
+// Echo
+void echo(char *argv[], int argc)
+{
+	// Basically, we need the ability to assign variables values. We need to create a 2-Dimensional array for variables
+	// The user should be able to type "variable=2" and then "echo $variable" and ysh should output "2".
+	// So we just need echo to check that variable list, and if the variable exists, it outputs whatever.
+
+	// Seems simple enough:
+	// In YSH.c, create 2D array for variables and their data.
+	// Pass this array (or a pointer to it, at least) to echo.
+	// If there are any strings in *argv[] that start with $, check the rest of that string to all variables stored in the array.
+	// If it exists, output its value.
+	// Otherwise, output an error message.
+	// Use printf to print arguments.
+	int i;
+	int err = 0;
+	int j;
+
+	for (i = 1; i < argc - 1; i++)
+	{
+		if (argv[i][0] == '$')
+		{
+			err = 1;
+			char buffer[15];
+
+			int k;
+
+			for (k = 0; k < 15; k++)
+			{
+				if (argv[i][k] != NULL)
+				{
+					buffer[k] = argv[i][k];
+				}
+			}
+
+			for (j = 0; j < 100; j++)
+			{
+				if (strcmp(buffer, myvar[i].varName))
+				{
+					printf("%s%s", my_var[i].varData, " ");
+					err = 0;
+				}
+			}
+
+			if (err == 1)
+			{
+				printf("\nError: Unrecognized Variable\n");
+			}
+		}
+		else if (err = 0)
+		{
+			printf("%s%s", argv[i], " ");
+		}
+	}
+
+	printf("%s%s", argv[argc - 1], " ");
+	return;
 }
 
 void execute_pipe(char *argv[], char *args[])

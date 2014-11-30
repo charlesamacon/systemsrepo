@@ -13,8 +13,6 @@
 
 #include "progs.h"
 
-extern static char *my_var[100];			// for echo to have access to.
-
 // Tokenizer 2000
 int tokenizer(char *c, char *argv[])
 {
@@ -45,65 +43,6 @@ int tokenizer(char *c, char *argv[])
 
 	argv[i] = NULL;
 	return i;
-}
-
-// Echo
-void echo(char *argv[], int argc)
-{
-	// Basically, we need the ability to assign variables values. We need to create a 2-Dimensional array for variables
-	// The user should be able to type "variable=2" and then "echo $variable" and ysh should output "2".
-	// So we just need echo to check that variable list, and if the variable exists, it outputs whatever.
-
-	// Seems simple enough:
-	// In YSH.c, create 2D array for variables and their data.
-	// Pass this array (or a pointer to it, at least) to echo.
-	// If there are any strings in *argv[] that start with $, check the rest of that string to all variables stored in the array.
-	// If it exists, output its value.
-	// Otherwise, output an error message.
-	// Use printf to print arguments.
-	int i;
-	int err = 0;
-	int j;
-
-	for (i = 1; i < argc - 1; i++)
-	{
-		if (argv[i][0] == '$')
-		{
-			err = 1;
-			char buffer[15];
-
-			int k;
-
-			for (k = 0; k < 15; k++)
-			{
-				if (argv[i][k] != NULL)
-				{
-					buffer[k] = argv[i][k];
-				}
-			}
-
-			for (j = 0; j < 100; j++)
-			{
-				if (strcmp(buffer, my_var[i]))
-				{
-					printf("%s%s", my_var[i], " ");
-					err = 0;
-				}
-			}
-
-			if (err == 1)
-			{
-				printf("\nError: Unrecognized Variable\n");
-			}
-		}
-		else if (err = 0)
-		{
-			printf("%s%s", argv[i], " ");
-		}
-	}
-
-	printf("%s%s", argv[argc - 1], " ");
-	return;
 }
 
 // Man
