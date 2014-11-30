@@ -50,6 +50,16 @@ int tokenizer(char *c, char *argv[])
 // Echo
 void echo(char *argv[], int argc)
 {
+	// Basically, we need the ability to assign variables values. We need to create a 2-Dimensional array for variables
+	// The user should be able to type "variable=2" and then "echo $variable" and ysh should output "2".
+	// So we just need echo to check that variable list, and if the variable exists, it outputs whatever.
+
+	// Seems simple enough:
+	// In YSH.c, create 2D array for variables and their data.
+	// Pass this array (or a pointer to it, at least) to echo.
+	// If there are any strings in *argv[] that start with $, check the rest of that string to all variables stored in the array.
+	// If it exists, output its value.
+	// Otherwise, output an error message.
 	// Use printf to print arguments.
 	int i;
 	int err = 0;
@@ -80,7 +90,7 @@ void echo(char *argv[], int argc)
 
 			if (err == 1)
 			{
-				printf("Error: Unrecognized Variable\n");
+				printf("\nError: Unrecognized Variable\n");
 			}
 		}
 		else if (err = 0)
@@ -90,17 +100,6 @@ void echo(char *argv[], int argc)
 	}
 
 	printf("%s%s", argv[argc - 1], " ");
-	// Basically, we need the ability to assign variables values. We need to create a 2-Dimensional array for variables
-	// The user should be able to type "variable=2" and then "echo $variable" and ysh should output "2".
-	// So we just need echo to check that variable list, and if the variable exists, it outputs whatever.
-
-	// Seems simple enough:
-	// In YSH.c, create 2D array for variables and their data.
-	// Pass this array (or a pointer to it, at least) to echo.
-	// If there are any strings in *argv[] that start with $, check the rest of that string to all variables stored in the array.
-	// If it exists, output its value.
-	// Otherwise, output an error message.
-
 	return;
 }
 
