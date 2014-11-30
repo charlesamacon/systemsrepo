@@ -149,6 +149,16 @@ void call_execve(char *cmd)
 		}
 		else
 		{
+			// Need to create a boolean type thing to check this
+			int outRedir = 0;	// THIS IS A TEST BOOL
+			if (outRedir == 1)
+			{
+				//int fd = open([FILENAME], O_RDWR | O_CREAT, S_IRUSR | S_IWUSR);
+
+				// dup2(fd, 1);	// make stdout go to file
+				
+				// close (fd);
+			}
 			i = execve(cmd, my_argv, my_envp);
 			printf("errno is %d\n", errno);
 			if (i < 0) {
@@ -314,26 +324,52 @@ void execute_pipe(char *argv[], char *args[])
 {
 	// This is to be reworked by Jordan.
 	// While this is the general idea of the thing, a much simpler method was figured out on 11/25/2014.
-	
-	// Not 100% sure on this, so its commented
 
-	// int fds[2];
-	// pipe(fds);
 
-	// if (fork())
-	// {
-	//		dup2(fds[1], STDOUT_FILENO);
-	//		call_execve(COMMAND FROM ARGV);
-	// }
-	// else
-	// {
-	//		dup2(fds[0], STDIN_FILENO);
-	//		call_exceve(COMMAND FROM ARGV);
-	// }
+	int fds[2];
+	pipe(fds);
 
-	// return;
+	if (fork())
+	{
+		dup2(fds[1], STDOUT_FILENO);
+		call_execve(COMMAND FROM ARGV);
+	}
+	else
+	{
+		dup2(fds[0], STDIN_FILENO);
+		call_exceve(COMMAND FROM ARGV);
+	}
+	return;
 }
 
+void redir_in(char cmd[])
+{
+	// if redirecting I/O
+
+	// Example:
+	// sort < input > output
+
+	// Input
+	int in;
+
+	in = open(cmd, O_RDONLY);
+	call_execve(cmd);
+	dup(in, STDIN_FILENO);
+	close(in);
+
+	return;
+}
+
+void redir_out(char output[], char file[])
+{
+	// Output (this needs to be read from STD OUT)
+	int out;
+	out = open(file, O_WRONLY | O_CREAT, 0666);
+	write(out, output, strlen(output));
+	dup2(out, STDOUT_FILENO);
+	close(out);
+	return;
+}
 
 int main(int argc, char *argv[], char *envp[])
 {
@@ -378,27 +414,7 @@ int main(int argc, char *argv[], char *envp[])
 							{
 								if(attach_path(cmd) == 0) 
 								{
-									// if redirecting I/O
-
-									// Example:
-									// sort < input > output
-
-									// int in;
-									// int out;
-
-									// Input
-									// in = open("input", O_RDONLY);		// var "input" is what we're reading in from. O_RDONLY states that it should be read only
-									// do things with in (pass to command, whatever).
-									// dup(in, STDIN_FILENO);				// duplicate file descriptor, create new file descriptor that refers to the same file
-									// close(in);							// close in
-
 									
-
-									// Output
-									// out = open("output", O_WRONLY|O_CREAT,0666);		// var "output" is what we're writing to. O_WRONLY states we're only writing. O_CREAT means that if it doesn't exist, we create a file of specific permissions
-									// write(out, $VAR, strlen($VAR));					// write to file descriptor, $VAR is what we want to write, and strlen($VAR) is how long it is.
-									// dup2(out, STDOUT_FILENO);						// duplicate file descriptor
-									// close(out);										// close out
 									call_execve(cmd);
 								} 
 								else 
