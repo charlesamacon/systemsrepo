@@ -373,6 +373,8 @@ int** strToBinary(char* str){
 		printf(" ");
 	}
 	*/
+
+	printBinary(arr, len);
 	return arr;
 	
 }
