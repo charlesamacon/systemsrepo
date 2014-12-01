@@ -192,11 +192,11 @@ void call_execve_background(char *cmd)
 		printf("Errno is %d\n", errno);
 		break;
 	case 0:
-		if (cmd == "cpuUsage")	// Might need to do a strcmp instead
+		if (strcmp(cmd, "cpusage"))	// Might need to do a strcmp instead
 		{
 			//cpUsage();		// Just a stub right now, but basically this is how YSH should handle processes that are non-standard unix command, INCLUDING echo.
 		}
-		else if (cmd == "echo")	// Again, strcmp?
+		else if (strcmp(cmd, "echo"))	// Again, strcmp?
 		{
 			//echo(*argv[], argc);
 		}
@@ -249,7 +249,10 @@ void assign_variable(char *var, char value)
 	// MY_SHELL> var = value
 	// This should store var in myvar[i].varName and value in myvar[i].varData.
 	// We are then able to manipulate said data in echo (which is being moved over to this file to keep from messing with externs).
-	int i = 0;
+	int i = 1;
+	
+	myvar[0].varName = "PATH";
+	myvar[0].varData = "/usr/bin/clear";
 
 	for (i; i < 100; i++)
 	{
