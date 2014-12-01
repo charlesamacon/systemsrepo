@@ -14,8 +14,9 @@
 
 #include "progs.h"
 
+// Globals
 extern int errno;
-
+int outRedir = 0;		// For checking to see if output needs to be redirected.
 typedef void (*sighandler_t)(int);
 typedef struct variable
 {
@@ -139,25 +140,27 @@ void call_execve(char *cmd)
 	// Only run if last command in argv is not '&'
 	printf("cmd is %s\n", cmd);
 	if (fork() == 0) {
-		if (cmd == "cpuUsage")	// Might need to do a strcmp instead.
+		if (strcmp(cmd, "cpusage"))	// Might need to do a strcmp instead.
 		{
 			//cpUsage();		// Just a stub right now, but basically this is how YSH should handle processes that are non-standard unix command, INCLUDING echo.
 		}
-		else if (cmd == "echo")	// Again, strcmp?
+		else if (strcmp(cmd, "echo"))	// Again, strcmp?
 		{
 			//echo(*argv[], argc);
 		}
 		else
 		{
 			// Need to create a boolean type thing to check this
-			int outRedir = 0;	// THIS IS A TEST BOOL
+			
 			if (outRedir == 1)
 			{
-				//int fd = open([FILENAME], O_RDWR | O_CREAT, S_IRUSR | S_IWUSR);
+				int fd = open([FILENAME], O_RDWR | O_CREAT, S_IRUSR | S_IWUSR);
 
-				// dup2(fd, 1);	// make stdout go to file
+				dup2(fd, 1);	// make stdout go to file
 				
-				// close (fd);
+				close (fd);
+
+				outRedir = 0;	// Reset this
 			}
 			i = execve(cmd, my_argv, my_envp);
 			printf("errno is %d\n", errno);
