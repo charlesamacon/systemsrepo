@@ -402,7 +402,7 @@ int** strToBinary(char* str){
 	}
 	*/
 
-	printBinary(arr, len);
+	//printBinary(arr, len); 
 	return arr;
 	
 }
