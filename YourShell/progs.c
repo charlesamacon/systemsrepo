@@ -193,10 +193,16 @@ void cpusage()
 	return;
 }
 
-float cpuAverage(){ //Returns first float of the file cpuLoad
+void cpuAverage(){ //Returns first float of the file cpuLoad
+	FILE *cpuStats;
+	cpuStats = fopen("cpuLoad","r");
 	
-
-
+	char average[5];
+	
+	while((c = fgetc(cpuStats)) != " ") average[i++] = c;
+	
+	printf("The average CPU usage is: %s\n", average);
+	fclose(cpuStats);
 }
 
 // SuperBash
