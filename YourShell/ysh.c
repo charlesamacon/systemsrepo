@@ -1,5 +1,7 @@
 // Group 13
 
+// The Super-Simple Shell. Named Ironically.
+
 #include <stdio.h>
 #include <stdlib.h>
 #include <unistd.h>
@@ -29,7 +31,7 @@ static variable myvar[100];
 
 void handle_signal(int signo)
 {
-    printf("\n[MY_SHELL ] ");
+    printf("\n[SSSH ] ");
     fflush(stdout);
 }
 
@@ -397,7 +399,7 @@ int main(int argc, char *argv[], char *envp[])
     } else {
         wait(NULL);
     }
-    printf("[MY_SHELL ] ");
+    printf("[SSSH ] ");
     fflush(stdout);
 
     while(c != EOF) {
@@ -405,7 +407,7 @@ int main(int argc, char *argv[], char *envp[])
         switch(c) {
             case '\n': if(tmp[0] == '\0') 
 						{
-							printf("[MY_SHELL ] ");
+							printf("[SSSH ] ");
 						} 
 					   else 
 					   {
@@ -439,7 +441,7 @@ int main(int argc, char *argv[], char *envp[])
                        }
 
                        free_argv();
-                       printf("[MY_SHELL ] ");
+                       printf("[SSSH ] ");
                        bzero(cmd, 100);
                    }
 
