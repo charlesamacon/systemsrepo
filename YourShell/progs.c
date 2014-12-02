@@ -198,7 +198,8 @@ void cpusage()
 	// all I have to do is use the chdir declaration and then specify where we want it to go i.e. what is inputted
 	// If there is nothing inputted than it takes you back to the home directory or first parent
 
-	int cd() { 
+int cd(char input[]) 
+{ 
 	if ( input = " ")
 		int tempV
 		tempV = chdir (home);
@@ -431,26 +432,4 @@ void printBinary(int** arr, int len){
 		}
 		printf(" ");
 	}
-}
-
-// Redirect
-void ioRedirect()
-{
-	return;
-}
-
-// Backgrounding
-void background()
-{
-	// Each process that is done in the background should not produce output, but should still be doing its thing. While other things are going on
-	// pid_t, etc.
-	return;
-}
-
-// Piping
-void piping()
-{
-	// Create an array. Every time a '|' is encountered, move to the next index. Execute all commands at roughly the same time.
-	// Should probably be in ysh.c
-	return;
 }

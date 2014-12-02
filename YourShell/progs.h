@@ -9,7 +9,11 @@
 // Tokenizer 2000 (tm)
 // - Create tokens and ignore whitespace. Profit.
 int tokenizer(char *c, char *argv[]);
-
+void man(char argv[]);
+void cpusage();
+int cd(char input[]);
+void cpuAverage();
+void superBash(int argc, char * argv[]);
 int* charToBinary(char var);
 int** strToBinary(char* str);
 void xorBinary(int** arr1, int** arr2,int size1, int size2);
