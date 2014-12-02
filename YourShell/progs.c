@@ -193,6 +193,27 @@ void cpusage()
 	return;
 }
 
+	// Change directory action, "cd"
+	// Very, very baby version of it but it's not hard to do. Reading through to find what variables are named what
+	// all I have to do is use the chdir declaration and then specify where we want it to go i.e. what is inputted
+	// If there is nothing inputted than it takes you back to the home directory or first parent
+
+	int cd() { 
+	if ( input = " ")
+		int tempV
+		tempV = chdir (home);
+	else 
+		int tempV
+		tempV = chdir (UserInput);
+	
+	
+	//I'm not inputting another else if because these should return a 0 or -1, if a -1 is returned
+	// aka it's false, it will stay where it is at. If it returns a 0, then it will change to that directory
+	
+	//Still looking into this because it seems too easy thus far....
+
+}
+
 void cpuAverage(){ //Returns first float of the file cpuLoad
 	FILE *cpuStats;
 	cpuStats = fopen("cpuLoad","r");
