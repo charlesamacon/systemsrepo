@@ -57,7 +57,7 @@ void man(char argv[])
 	int i;
 	for (i = 0; i < 50; i++)
 	{
-		if (argv[i] != NULL)
+		if (argv[i] != EOF)
 		{
 			man[i] = argv[i];
 		}
@@ -92,7 +92,7 @@ void man(char argv[])
 			"is then able to access this log and return an averaged value from it.\n\n"
 			"Options are currently not implemented or decided upon.\n"
 			"- cL	clear log\n"
-			"--help	display this help page and exit\n")
+			"--help	display this help page and exit\n");
 	}
 	else if (strcmp(man, "man"))
 	{
@@ -114,7 +114,7 @@ void man(char argv[])
 			"man\n\n"
 			"Examples\n\n"
 			"man ls\n"
-			"Display the manual page for the program ls.\n")
+			"Display the manual page for the program ls.\n");
 	}
 
 
@@ -133,12 +133,14 @@ void cpusage()
 	int error;
 	int count = 0;
 	FILE *cpuStats;
-	char string[512];
+	char string[512], c;
 	char* stats;
 	error = sysinfo(&info);
 	int i = 0;
 	float total;
 	char percentFloat[5];
+    //declare percents
+    
 	if (error != 0)
 	{
 		printf("Error = %d\n", error);
@@ -161,7 +163,7 @@ void cpusage()
 		percents[count++] = strtof(stats); //Turns the value strings into floats and stores them in an array
 		while(stats != NULL){
 			stats = strtok(NULL," ");
-			percents[count++] = strtof(stats);
+			percents[count++] = strtof(stats); //strtof needs another variable of type CHAR **
 		}
 		
 		i=1;
@@ -170,19 +172,19 @@ void cpusage()
 		cpuStats = fopen("cpuLoad","w"); //Destroys old cpuLoad file and opens a new one
 		
 		sprintf(percentFloat,"%f",total/(count-1)); //Converts float to string so it can be written to file
-		fputc(total/(count-1))
+		fputc(total/(count-1), cpuStats);
 		i=2;
 		while(i<97 && i < count){
-			fputc(' ');
+			fputc(' ', cpuStats);
 			sprintf(percentFloat,"%f",percents[i]);
-			fputs(percentFloat);
+			fputs(percentFloat, cpuStats);
 			i++;
 		}
 		cpuLoad = info.loads[2];
 		sprintf(percentFloat,"%f",cpuLoad);
-		fputc(' ');
-		fputs(percentFloat);
-		fclose("cpuLoad");
+		fputc(' ', cpuStats);
+		fputs(percentFloat, cpuStats);
+		fclose(cpuStats);
 		// This will return the 15 minute average
 		sleep(60*15);
 	}
@@ -200,12 +202,12 @@ void cpusage()
 
 int cd(char input[]) 
 { 
-	if ( input = " ")
-		int tempV
-		tempV = chdir (home);
+    int tempV;
+    //declare home and UserInput
+	if ( input == " ")
+		tempV = chdir(home);
 	else 
-		int tempV
-		tempV = chdir (UserInput);
+		tempV = chdir(UserInput);
 	
 	
 	//I'm not inputting another else if because these should return a 0 or -1, if a -1 is returned
@@ -220,7 +222,7 @@ void cpuAverage(){ //Returns first float of the file cpuLoad
 	cpuStats = fopen("cpuLoad","r");
 	
 	char average[5];
-	
+	char c;
 	while((c = fgetc(cpuStats)) != " ") average[i++] = c;
 	
 	printf("The average CPU usage is: %s\n", average);

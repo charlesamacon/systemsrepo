@@ -20,14 +20,14 @@
 extern int errno;
 int outRedir = 0;		// For checking to see if output needs to be redirected.
 typedef void (*sighandler_t)(int);
-typedef struct variable
+struct variable
 {
 	char varName[25];
 	char varData[25];
 };
 static char *my_argv[100], *my_envp[100], *my_var[100];			// Added array for variables (for echo to use)
 static char *search_path[10];
-static variable myvar[100];
+static struct variable myvar[100];
 
 void handle_signal(int signo)
 {
@@ -139,6 +139,7 @@ int attach_path(char *cmd)
 
 void call_execve(char *cmd)
 {
+    int i;
 	// Only run if last command in argv is not '&'
 	printf("cmd is %s\n", cmd);
 	if (fork() == 0) {
@@ -215,12 +216,13 @@ void call_execve_background(char *cmd)
 		}
 	}
 
-	printf("Process ID %d\n" (int)pid);
+	printf("Process ID %d\n", pid);
 
 	return;
 }
 
 // From gnu.org/software/libc/manual/html_node/Foreground-and-Background.html
+/* //Not seeing this used anywhere
 void put_job_in_background(job *j, int cont)
 {
 	if (cont)
@@ -231,6 +233,7 @@ void put_job_in_background(job *j, int cont)
 		}
 	}
 }
+*/
 
 void free_argv()
 {
@@ -249,12 +252,11 @@ void assign_variable(char *var, char value)
 	// MY_SHELL> var = value
 	// This should store var in myvar[i].varName and value in myvar[i].varData.
 	// We are then able to manipulate said data in echo (which is being moved over to this file to keep from messing with externs).
-	int i = 1;
 	
 	myvar[0].varName = "PATH";
 	myvar[0].varData = "/usr/bin/clear";
 
-	for (i; i < 100; i++)
+	for (int i= 1; i < 100; i++)
 	{
 		if (myvar[i] == NULL)
 		{
@@ -298,7 +300,7 @@ void echo(char *argv[], int argc)
 
 			for (k = 0; k < 15; k++)
 			{
-				if (argv[i][k] != NULL)
+				if (argv[i][k] != EOF)
 				{
 					buffer[k] = argv[i][k];
 				}
@@ -318,7 +320,7 @@ void echo(char *argv[], int argc)
 				printf("\nError: Unrecognized Variable\n");
 			}
 		}
-		else if (err = 0)
+		else if (err == 0)
 		{
 			printf("%s%s", argv[i], " ");
 		}
