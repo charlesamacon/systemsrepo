@@ -142,19 +142,9 @@ void call_execve(char *cmd)
     int i;
 	// Only run if last command in argv is not '&'
 	printf("cmd is %s\n", cmd);
-	if (fork() == 0) {
-		if (strcmp(cmd, "cpusage"))	// Might need to do a strcmp instead.
-		{
-			//cpUsage();		// Just a stub right now, but basically this is how YSH should handle processes that are non-standard unix command, INCLUDING echo.
-		}
-		else if (strcmp(cmd, "echo"))	// Again, strcmp?
-		{
-			//echo(*argv[], argc);
-		}
-		else
-		{
+	if (fork() == 0) 
+	{
 			// Need to create a boolean type thing to check this
-			
 			if (outRedir == 1)
 			{
 				int fd = open([FILENAME], O_RDWR | O_CREAT, S_IRUSR | S_IWUSR);
@@ -171,7 +161,6 @@ void call_execve(char *cmd)
 				printf("%s: %s\n", cmd, "command not found");
 				exit(1);
 			}
-		}
 	}
 	else {
 		wait(NULL);
@@ -193,17 +182,7 @@ void call_execve_background(char *cmd)
 		printf("Errno is %d\n", errno);
 		break;
 	case 0:
-		if (strcmp(cmd, "cpusage"))	// Might need to do a strcmp instead
-		{
-			//cpUsage();		// Just a stub right now, but basically this is how YSH should handle processes that are non-standard unix command, INCLUDING echo.
-		}
-		else if (strcmp(cmd, "echo"))	// Again, strcmp?
-		{
-			//echo(*argv[], argc);
-		}
-		else
-		{
-			i = execve(cmd, my_argv, my_envp);
+					i = execve(cmd, my_argv, my_envp);
 			if (i < 0)
 			{
 				printf("%s: %s\n", cmd, "command not found");
@@ -213,7 +192,6 @@ void call_execve_background(char *cmd)
 			{
 				waitpid(%status);	// Fork() returns new pid to parent
 			}
-		}
 	}
 
 	printf("Process ID %d\n", pid);
@@ -256,7 +234,12 @@ void assign_variable(char *var, char value)
 	myvar[0].varName = "PATH";
 	myvar[0].varData = "/usr/bin/clear";
 
-	for (int i= 1; i < 100; i++)
+	//We have to declare this outside of a for loop in C
+	//C++ lets you declare it as part of the for loop declaration, C does not, however.
+	//-CAM
+	int i;
+
+	for (i= 1; i < 100; i++)
 	{
 		if (myvar[i] == NULL)
 		{
@@ -400,6 +383,7 @@ int main(int argc, char *argv[], char *envp[])
 
     if(fork() == 0) {
         execve("/usr/bin/clear", argv, my_envp);
+		// I think this is where we should call the background function for cpusage();
         exit(1);
     } else {
         wait(NULL);
@@ -422,10 +406,41 @@ int main(int argc, char *argv[], char *envp[])
 							
 							if(index(cmd, '/') == NULL)		
 							{
-								if(attach_path(cmd) == 0) 
+								if (strcmp(cmd, "echo"))
 								{
-									
-									call_execve(cmd);
+									//echo();
+								}
+								else if (strcmp(cmd, "cpusage"))
+								{
+									cpusage();
+								}
+								else if (strcmp(cmd, "superBash"))
+								{
+									//superBash();
+								}
+								else if (strcmp(cmd, "strToBinary"))
+								{
+									//strToBinary();
+								}
+								else if (strcmp(cmd, "XOR"))
+								{
+									//xorBinary();
+								}
+								else if (strcmp(cmd, "cd"))
+								{
+									//change directory
+								}
+								else if(attach_path(cmd) == 0) 
+								{
+									if (strcmp(argv[argc - 1],"&"))
+									{
+										// If last argv is &, run in background.
+										call_execve_background(cmd);
+									}
+									else
+									{
+										call_execve(cmd);
+									}
 								} 
 								else 
 								{
