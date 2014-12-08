@@ -282,20 +282,30 @@ void execute_pipe(char arg1[], char arg2[])
 	// This is to be reworked by Jordan.
 	// While this is the general idea of the thing, a much simpler method was figured out on 11/25/2014.
 
+	printf("Executing Pipe\n");
 
 	int fds[2];
-	pipe(fds);
+	//pipe(fds);
 
-	if (fork())
+	execute_function(arg1, 1, 0);
+	execute_function(arg2, 0, 1);
+	
+	/*if (fork())
 	{
-		dup2(fds[1], STDOUT_FILENO);
+		//dup2(fds[1], STDOUT_FILENO);
 		//call_execve(arg1);
 	}
 	else
 	{
-		dup2(fds[0], STDIN_FILENO);
+		//dup2(fds[0], STDIN_FILENO);
 		//call_exceve(arg2);
-	}
+	}*/
+	return;
+}
+
+void execute_function(char func[], int out, int in)
+{
+	printf("Executing function: %s\n", func);
 	return;
 }
 
@@ -380,9 +390,12 @@ int main(int argc, char *argv[], char *envp[])
 							{			
 								int outBool = 0;
 								int inBool = 0;
+								int pipeBool = 0;
 								saved_stdout = dup(STDOUT_FILENO);
 								int outCheck = 1;
 								int inCheck = 1;
+								int pipeCheck = 1;
+								int pipeIndex = 0;
 								
 								// Check to see if we're redirecting output.
 								for (outCheck; outCheck < myargc; outCheck++)
@@ -399,6 +412,7 @@ int main(int argc, char *argv[], char *envp[])
 									}
 								}
 								
+								// Check to see if we're redirecting input
 								for (inCheck; inCheck < myargc; inCheck++)
 								{
 									if (my_argv[inCheck] != NULL)
@@ -413,6 +427,28 @@ int main(int argc, char *argv[], char *envp[])
 									}
 								}
 								
+								// Check for pipes
+								for (pipeCheck; pipeCheck < myargc; pipeCheck++)
+								{
+									if (my_argv[pipeCheck] != NULL)
+									{
+										if (strcmp(my_argv[pipeCheck], "|") == 0)
+										{
+											if (my_argv[pipeCheck + 1] != NULL)
+											{
+												pipeBool = 1;
+												pipeIndex = pipeCheck;
+											}
+										}
+									}
+								}
+								
+								if (pipeBool == 1)
+								{
+									execute_pipe(my_argv[pipeIndex - 1], my_argv[pipeIndex + 1]);
+								}
+								else
+								{
 								if (strcmp(cmd, "echo") == 0)
 								{
 									//echo(my_argv, argc+1);
@@ -646,6 +682,7 @@ int main(int argc, char *argv[], char *envp[])
 								else if (strcmp(cmd, "man") == 0)
 								{
 									saved_stdout = dup(STDOUT_FILENO);
+									saved_stdin = dup(STDIN_FILENO);
 									if (my_argv[1] != NULL)
 									{
 										if (my_argv[2] != NULL)
@@ -852,6 +889,7 @@ int main(int argc, char *argv[], char *envp[])
 								dup2(saved_stdout, 1);
 								close(saved_stdout);
 							} 
+							}
 							else 
 							{
                            //if((fd[1] = open(cmd, O_RDONLY)) > 0) 
