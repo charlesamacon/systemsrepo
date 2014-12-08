@@ -158,7 +158,6 @@ void call_execve(char *cmd)
 			i = execve(cmd, my_argv, my_envp);
 			printf("errno is %d\n", errno);
 			if (i < 0) {
-				printf("POOP\n");
 				printf("%s: %s\n", cmd, "command not found");
 				exit(1);
 			}
@@ -371,6 +370,13 @@ int main(int argc, char *argv[], char *envp[])
 							strncpy(cmd, my_argv[0], strlen(my_argv[0]));
 							strncat(cmd, "\0", 1);
 							
+							int myargc = 0;
+							int argcounter = 0;
+							for (argcounter; my_argv[argcounter] != NULL; argcounter++)
+							{
+								myargc++;
+							}
+							
 							if(index(cmd, '/') == NULL)		
 							{								
 								if (strcmp(cmd, "echo") == 0)
@@ -380,7 +386,7 @@ int main(int argc, char *argv[], char *envp[])
 									int it = 1;
 									int it2 = 1;
 									int redirOut = 0;
-									int myargc = 0;
+									int myargc2 = 0;
 									
 									for (it2; my_argv[it2] != NULL; it2++)
 									{
@@ -388,12 +394,12 @@ int main(int argc, char *argv[], char *envp[])
 										{
 											redirOut = 1;
 										}
-										myargc++;
+										myargc2++;
 									}
 									
 									if (redirOut == 1)
 									{
-										redir_out(my_argv[myargc]);
+										redir_out(my_argv[myargc2]);
 										for (it; my_argv[it] != NULL; it++)
 										{
 											if (my_argv[it][0] == '$')
@@ -433,7 +439,7 @@ int main(int argc, char *argv[], char *envp[])
 											}
 											else
 											{
-												if (it < myargc - 1)
+												if (it < myargc2 - 1)
 												{
 													printf("%s ", my_argv[it]);
 												}
@@ -673,7 +679,7 @@ int main(int argc, char *argv[], char *envp[])
 									saved_stdout = dup(STDOUT_FILENO);
 									
 									// This does not work. This should not be looking at argv and argc
-									if (strcmp(argv[argc - 1],"&") == 0)
+									if (strcmp(my_argv[myargc - 1],"&") == 0)
 									{
 										
 										// If last argv is &, run in background.
