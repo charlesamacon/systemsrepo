@@ -448,7 +448,14 @@ int main(int argc, char *argv[], char *envp[])
 								}
 								else if (strcmp(cmd, "man") == 0)
 								{
-									man(my_argv[1]);
+									if (my_argv[1] != NULL)
+									{
+										man(my_argv[1]);
+									}
+									else
+									{
+										man("ERR");
+									}
 									//printf("man\n");
 								}
 								else if (strcmp(cmd, "quit") == 0)

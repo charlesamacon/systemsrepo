@@ -146,7 +146,7 @@ void man(char argv[])
 	}
 	else
 	{
-		printf("Unknown MAN page, please try again.\n");
+		printf("Unknown MAN page for %s, please try again.\n", man);
 	}
 
 
