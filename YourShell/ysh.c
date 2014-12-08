@@ -376,51 +376,118 @@ int main(int argc, char *argv[], char *envp[])
 								if (strcmp(cmd, "echo") == 0)
 								{
 									//echo(my_argv, argc+1);
+									saved_stdout = dup(STDOUT_FILENO);
 									int it = 1;
+									int it2 = 1;
+									int redirOut = 0;
+									int myargc = 0;
 									
-									for (it; my_argv[it] != NULL; it++)
+									for (it2; my_argv[it2] != NULL; it2++)
 									{
-										if (my_argv[it][0] == '$')
+										if (strcmp(my_argv[it2], ">") == 0)
 										{
-											// Check and print variable.
-											//printf("VAR ");
-											
-											int err = 1;
-											int j;
-											char buffer[15];
-
-											int k;
-
-											for (k = 0; k < 15; k++)
-											{
-												if (my_argv[it][k] != '\0')
-												{
-													buffer[k] = my_argv[it][k+1];
-												}
-											}
-
-											for (j = 0; j < 100; j++)
-											{
-												//printf("%d\n", j);
-												//printf("%s\n", myvar[j].varName);
-												if (strcmp(buffer, myvar[j].varName) == 0)
-												{
-													printf("%s%s", myvar[j].varData, " ");
-													err = 0;
-												}
-											}
-	
-											if (err == 1)
-											{
-												printf("$UNKNOWN_VAR ");
-											}
+											redirOut = 1;
 										}
-										else
-										{
-											printf("%s ", my_argv[it]);
-										}
+										myargc++;
 									}
 									
+									if (redirOut == 1)
+									{
+										redir_out(my_argv[myargc]);
+										for (it; my_argv[it] != NULL; it++)
+										{
+											if (my_argv[it][0] == '$')
+											{
+												// Check and print variable.
+												//printf("VAR ");
+											
+												int err = 1;
+												int j;
+												char buffer[15];
+
+												int k;
+
+												for (k = 0; k < 15; k++)
+												{
+													if (my_argv[it][k] != '\0')
+													{
+														buffer[k] = my_argv[it][k+1];
+													}
+												}
+
+												for (j = 0; j < 100; j++)
+												{
+													//printf("%d\n", j);
+													//printf("%s\n", myvar[j].varName);
+													if (strcmp(buffer, myvar[j].varName) == 0)
+													{
+														printf("%s%s", myvar[j].varData, " ");
+														err = 0;
+													}
+												}
+	
+												if (err == 1)
+												{
+													printf("$UNKNOWN_VAR ");
+												}
+											}
+											else
+											{
+												if (it < myargc - 1)
+												{
+													printf("%s ", my_argv[it]);
+												}
+											}
+										}
+										fflush(stdout);
+									}
+									else
+									{
+										for (it; my_argv[it] != NULL; it++)
+										{
+											if (my_argv[it][0] == '$')
+											{
+												// Check and print variable.
+												//printf("VAR ");
+											
+												int err = 1;
+												int j;
+												char buffer[15];
+
+												int k;
+
+												for (k = 0; k < 15; k++)
+												{
+													if (my_argv[it][k] != '\0')
+													{
+														buffer[k] = my_argv[it][k+1];
+													}
+												}
+
+												for (j = 0; j < 100; j++)
+												{
+													//printf("%d\n", j);
+													//printf("%s\n", myvar[j].varName);
+													if (strcmp(buffer, myvar[j].varName) == 0)
+													{
+														printf("%s%s", myvar[j].varData, " ");
+														err = 0;
+													}
+												}
+	
+												if (err == 1)
+												{
+													printf("$UNKNOWN_VAR ");
+												}
+											}
+											else
+											{
+												printf("%s ", my_argv[it]);
+											}
+										}
+									}
+									dup2(saved_stdout, 1);
+									close(saved_stdout);
 									printf("\n");
 
 								}
@@ -604,6 +671,8 @@ int main(int argc, char *argv[], char *envp[])
 								else if(attach_path(cmd) == 0) 
 								{
 									saved_stdout = dup(STDOUT_FILENO);
+									
+									// This does not work. This should not be looking at argv and argc
 									if (strcmp(argv[argc - 1],"&") == 0)
 									{
 										
