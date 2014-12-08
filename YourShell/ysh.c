@@ -147,13 +147,13 @@ void call_execve(char *cmd)
 			// Need to create a boolean type thing to check this
 			if (outRedir == 1)
 			{
-				int fd = open([FILENAME], O_RDWR | O_CREAT, S_IRUSR | S_IWUSR);
+				//int fd = open([FILENAME], O_RDWR | O_CREAT, S_IRUSR | S_IWUSR);
 
-				dup2(fd, 1);	// make stdout go to file
+				//dup2(fd, 1);	// make stdout go to file
 				
-				close (fd);
+				//close (fd);
 
-				outRedir = 0;	// Reset this
+				//outRedir = 0;	// Reset this
 			}
 			i = execve(cmd, my_argv, my_envp);
 			printf("errno is %d\n", errno);
@@ -190,7 +190,7 @@ void call_execve_background(char *cmd)
 			}
 			else
 			{
-				waitpid(%status);	// Fork() returns new pid to parent
+				waitpid(pid, &status, WNOHANG);	// Fork() returns new pid to parent
 			}
 	}
 
@@ -231,8 +231,8 @@ void assign_variable(char *var, char value)
 	// This should store var in myvar[i].varName and value in myvar[i].varData.
 	// We are then able to manipulate said data in echo (which is being moved over to this file to keep from messing with externs).
 	
-	myvar[0].varName = "PATH";
-	myvar[0].varData = "/usr/bin/clear";
+	strncpy(myvar[0].varName,"PATH",strlen("PATH"));
+	strncpy(myvar[0].varData,"/usr/bin/clear",strlen("/usr/bin/clear"));
 
 	//We have to declare this outside of a for loop in C
 	//C++ lets you declare it as part of the for loop declaration, C does not, however.
@@ -241,11 +241,11 @@ void assign_variable(char *var, char value)
 
 	for (i= 1; i < 100; i++)
 	{
-		if (myvar[i] == NULL)
+		if (myvar[i].varName == NULL)
 		{
 			// This doesn't make sense, and I'm exhausted from work. Can anyone pick this up? Basically, we need to store var and its value, but I can't put 2 and 2 together right now.
-			strncpy(myvar[i].varName, var);
-			strncpy(myvar[i].varData, value);
+			strncpy(myvar[i].varName, var, strlen(var));
+			strncpy(myvar[i].varData, value, strlen(value));
 			//my_var[i].var = var;
 			//my_var[i][0] = value;
 			break;
@@ -293,7 +293,7 @@ void echo(char *argv[], int argc)
 			{
 				if (strcmp(buffer, myvar[i].varName))
 				{
-					printf("%s%s", my_var[i].varData, " ");
+					printf("%s%s", myvar[i].varData, " ");
 					err = 0;
 				}
 			}
@@ -325,12 +325,12 @@ void execute_pipe(char *argv[], char *args[])
 	if (fork())
 	{
 		dup2(fds[1], STDOUT_FILENO);
-		call_execve(COMMAND FROM ARGV);
+		//call_execve(COMMAND FROM ARGV);
 	}
 	else
 	{
 		dup2(fds[0], STDIN_FILENO);
-		call_exceve(COMMAND FROM ARGV);
+		//call_exceve(COMMAND FROM ARGV);
 	}
 	return;
 }
@@ -347,7 +347,7 @@ void redir_in(char cmd[])
 
 	in = open(cmd, O_RDONLY);
 	call_execve(cmd);
-	dup(in, STDIN_FILENO);
+	dup2(in, STDIN_FILENO);
 	close(in);
 
 	return;
@@ -406,29 +406,40 @@ int main(int argc, char *argv[], char *envp[])
 							
 							if(index(cmd, '/') == NULL)		
 							{
-								if (strcmp(cmd, "echo"))
+								if (strcmp(cmd, "echo") == 0)
 								{
 									//echo();
+									printf("Echo\n");
 								}
-								else if (strcmp(cmd, "cpusage"))
+								else if (strcmp(cmd, "cpusage") == 0)
 								{
-									cpusage();
+									//cpusage();
+									printf("Cpusage\n");
 								}
-								else if (strcmp(cmd, "superBash"))
+								else if (strcmp(cmd, "superBash") == 0)
 								{
 									//superBash();
+									printf("SuperBash\n");
 								}
-								else if (strcmp(cmd, "strToBinary"))
+								else if (strcmp(cmd, "strToBinary") == 0)
 								{
 									//strToBinary();
+									printf("strToBinary\n");
 								}
-								else if (strcmp(cmd, "XOR"))
+								else if (strcmp(cmd, "XOR") == 0)
 								{
-									//xorBinary();
+									xorBinary(my_argv[1],my_argv[2],strlen(my_argv[1]),strlen(my_argv[2]));
+									printf("XOR\n");
 								}
-								else if (strcmp(cmd, "cd"))
+								else if (strcmp(cmd, "cd") == 0)
 								{
 									//change directory
+									printf("cd\n");
+								}
+								else if (strcmp(cmd, "man") == 0)
+								{
+									//man();
+									printf("man\n");
 								}
 								else if(attach_path(cmd) == 0) 
 								{
@@ -449,15 +460,15 @@ int main(int argc, char *argv[], char *envp[])
 							} 
 						else 
 						{
-                           if((fd[1] = open(cmd, O_RDONLY)) > 0) 
-						   {
-                               close(fd);
-                               call_execve(cmd);
-                           } 
-						   else 
-						   {
-                               printf("%s: command not found\n", cmd);
-                           }
+                           //if((fd[1] = open(cmd, O_RDONLY)) > 0) 
+						   //{
+                           //    close(fd);
+                           //    call_execve(cmd);
+                           //} 
+						   //else 
+						   //{
+                           //    printf("%s: command not found\n", cmd);
+                           //}
                        }
 
                        free_argv();

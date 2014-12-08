@@ -128,7 +128,7 @@ void cpusage()
 
 	// As far as I can find, there's not a log that's actually stored somewhere, so we might have to create one and run this as a background (I know, I know...)
 
-	struct sysinfo info;
+	/*struct sysinfo info;
 	float cpuLoad;
 	int error;
 	int count = 0;
@@ -192,6 +192,7 @@ void cpusage()
 	// Then, if the file is longer than 96 lines (4 times each hour for 24 hours), we disregard the first line and rewrite the file.
 	// Then store the value of each line in an unsigned long array[# of lines], add them up, and divide by [number of lines] for our 24-hour average.
 	// While this won't immediately return a 24-hour average, it will at least return an average since the shell has been running.
+	*/
 	return;
 }
 
@@ -204,10 +205,10 @@ int cd(char input[])
 { 
     int tempV;
     //declare home and UserInput
-	if ( input == " ")
-		tempV = chdir(home);
-	else 
-		tempV = chdir(UserInput);
+	//if ( input == " ")
+		//tempV = chdir(home);
+	//else 
+		//tempV = chdir(UserInput);
 	
 	
 	//I'm not inputting another else if because these should return a 0 or -1, if a -1 is returned
@@ -223,6 +224,7 @@ void cpuAverage(){ //Returns first float of the file cpuLoad
 	
 	char average[5];
 	char c;
+	int i = 0;
 	while((c = fgetc(cpuStats)) != " ") average[i++] = c;
 	
 	printf("The average CPU usage is: %s\n", average);
@@ -410,16 +412,30 @@ int** strToBinary(char* str){
 }
 
 //2 strings are xor'd character by character, goes by shorter string length
-void xorBinary(int** arr1, int** arr2,int size1, int size2){
+void xorBinary(char arr1[], char arr2[],int size1, int size2){
 	int i,k;
 	int size;
 	if(size1 > size2) size = size2;
 	else size = size1;
 	
-	for(i=0;i<size;i++){
-		for(k=0;k<7;k++){
+	/*for(i=0;i<size;i++){
+		for(k=0;k<size;k++){
+		printf("Looping\n");
 			if(arr1[i][k] == arr2[i][k]) printf("0");
 			else printf("1");
+		}
+		printf(" ");
+	}*/
+	
+	for (i = 0; i < size; i++)
+	{
+		if (arr1[i] == arr2[i])
+		{
+			printf("0");
+		}
+		else
+		{
+			printf("1");
 		}
 		printf(" ");
 	}
