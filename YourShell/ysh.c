@@ -368,12 +368,8 @@ int main(int argc, char *argv[], char *envp[])
 							strncpy(cmd, my_argv[0], strlen(my_argv[0]));
 							strncat(cmd, "\0", 1);
 							
-							if (strcmp(my_argv[1], "=") == 0)
-							{
-								assign_variable(my_argv[0],my_argv[2]);
-							}
-							else if(index(cmd, '/') == NULL)		
-							{
+							if(index(cmd, '/') == NULL)		
+							{								
 								if (strcmp(cmd, "echo") == 0)
 								{
 									//echo(my_argv, argc+1);
@@ -455,6 +451,13 @@ int main(int argc, char *argv[], char *envp[])
 									man(my_argv[1]);
 									//printf("man\n");
 								}
+								else if (my_argv[1] != NULL)
+								{
+									if (strcmp(my_argv[1], "=") == 0)
+									{
+										assign_variable(my_argv[0],my_argv[2]);
+									}
+								}
 								else if(attach_path(cmd) == 0) 
 								{
 									if (strcmp(argv[argc - 1],"&"))
@@ -466,25 +469,24 @@ int main(int argc, char *argv[], char *envp[])
 									{
 										call_execve(cmd);
 									}
-								} 
+								}
 								else 
 								{
 									printf("%s: command not found\n", cmd);
 								}
 							} 
-						else 
-						{
+							else 
+							{
                            //if((fd[1] = open(cmd, O_RDONLY)) > 0) 
 						   //{
                            //    close(fd);
                            //    call_execve(cmd);
                            //} 
 						   //else 
-						   //{
-                           //    printf("%s: command not found\n", cmd);
-                           //}
-                       }
 
+									printf("%s: command not found\n", cmd);
+
+							}
                        free_argv();
                        printf("[SSSH ] ");
                        bzero(cmd, 100);
