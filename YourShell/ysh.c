@@ -277,7 +277,7 @@ void assign_variable(char var[], char value[])
 	}
 }
 
-void execute_pipe(char *arg1[], char *arg2[])
+void execute_pipe(char arg1[], char arg2[])
 {
 	// This is to be reworked by Jordan.
 	// While this is the general idea of the thing, a much simpler method was figured out on 11/25/2014.
@@ -289,17 +289,17 @@ void execute_pipe(char *arg1[], char *arg2[])
 	if (fork())
 	{
 		dup2(fds[1], STDOUT_FILENO);
-		//call_execve(COMMAND FROM ARGV);
+		//call_execve(arg1);
 	}
 	else
 	{
 		dup2(fds[0], STDIN_FILENO);
-		//call_exceve(COMMAND FROM ARGV);
+		//call_exceve(arg2);
 	}
 	return;
 }
 
-void redir_in(char cmd[])
+void redir_in(char file[])
 {
 	// if redirecting I/O
 
@@ -308,12 +308,9 @@ void redir_in(char cmd[])
 
 	// Input
 	int in;
-
-	in = open(cmd, O_RDONLY);
-	call_execve(cmd);
+	in = open(file, O_RDONLY);
 	dup2(in, STDIN_FILENO);
 	close(in);
-
 	return;
 }
 
@@ -334,7 +331,9 @@ int main(int argc, char *argv[], char *envp[])
 	int i;
 
 	int saved_stdout;
+	int saved_stdin;
 	saved_stdout = dup(STDOUT_FILENO);
+	saved_stdin = dup(STDIN_FILENO);
     char *tmp = (char *)malloc(sizeof(char) * 100);
     char *path_str = (char *)malloc(sizeof(char) * 256);
     char *cmd = (char *)malloc(sizeof(char) * 100);
@@ -378,7 +377,42 @@ int main(int argc, char *argv[], char *envp[])
 							}
 							
 							if(index(cmd, '/') == NULL)		
-							{								
+							{			
+								int outBool = 0;
+								int inBool = 0;
+								saved_stdout = dup(STDOUT_FILENO);
+								int outCheck = 1;
+								int inCheck = 1;
+								
+								// Check to see if we're redirecting output.
+								for (outCheck; outCheck < myargc; outCheck++)
+								{
+									if (my_argv[outCheck] != NULL)
+									{
+										if (strcmp(my_argv[outCheck], ">") == 0)
+												{
+													if (my_argv[outCheck + 1] != NULL)
+													{
+														outBool = 1;
+													}
+												}
+									}
+								}
+								
+								for (inCheck; inCheck < myargc; inCheck++)
+								{
+									if (my_argv[inCheck] != NULL)
+									{
+										if (strcmp(my_argv[inCheck], "<") == 0)
+												{
+													if (my_argv[inCheck + 1] != NULL)
+													{
+														inBool = 1;
+													}
+												}
+									}
+								}
+								
 								if (strcmp(cmd, "echo") == 0)
 								{
 									//echo(my_argv, argc+1);
@@ -598,28 +632,16 @@ int main(int argc, char *argv[], char *envp[])
 								else if (strcmp(cmd, "cd") == 0)
 								{
 										saved_stdout = dup(STDOUT_FILENO);
-										if(my_argv[1] != NULL)
+										if(outBool = 1)
 										{
-											if (strcmp(my_argv[1], ">") == 0)
-											{
-												if (my_argv[2] != NULL)
-												{
-													redir_out(my_argv[2]);
-													//change directory
-													printf("cd\n");
-													fflush(stdout);
-												}
-											}
+											redir_out(my_argv[2]);
+											printf("cd\n");
 										}
 										else
 										{
 											//change directory
 											printf("cd\n");
 										}
-										
-										dup2(saved_stdout, 1);
-										close(saved_stdout);
-									
 								}
 								else if (strcmp(cmd, "man") == 0)
 								{
@@ -628,14 +650,121 @@ int main(int argc, char *argv[], char *envp[])
 									{
 										if (my_argv[2] != NULL)
 										{
-											if (strcmp(my_argv[2], ">") == 0)
+											if (outBool == 1 && inBool == 0)
 											{
 												if (my_argv[3] != NULL)
 												{
 													redir_out(my_argv[3]);
 													//change directory
 													man(my_argv[1]);
-													fflush(stdout);
+												}
+											}
+											else if (outBool == 0 && inBool == 1)
+											{
+												// Just file input
+												FILE *input;
+												char c;
+												char temp[5];
+												char temp2[25];
+												int k = 0;
+												//printf("Opening\n");
+												input = fopen(my_argv[2], "r");
+												
+												if (input == NULL)
+												{
+													printf("Error opening file\n");
+													printf("Sometimes you have to try again\n");
+												}
+												else
+												{
+												
+												
+												
+												//printf("Assigning\n");
+												while((c = fgetc(input)) != EOF)
+												{
+												//printf("Assigning2\n");
+													if (c != '\n')
+													{
+														//printf("Assigning %c\n", c);
+														temp[k] = c;
+														k++;
+													}
+													else
+													{
+														//printf("Empty\n");
+														//temp[k] = EOF;
+													}
+												}
+												fclose(input);
+												fflush(stdin);
+												//man(temp);
+												//printf("%s\n", temp);
+												strncpy(temp2,temp,k);
+												//printf("%s\n", temp2);
+												man(temp);
+												//printf("Just Input\n");
+												}
+											}
+											else if (outBool == 1 && inBool == 1)
+											{
+												// Do both (input then output)
+												FILE *input;
+												char c;
+												char temp[5];
+												char temp2[25];
+												int k = 0;
+												//printf("Opening\n");
+												input = fopen(my_argv[2], "r");
+												
+												if (input == NULL)
+												{
+													printf("Error opening file\n");
+													printf("Sometimes you have to try again\n");
+												}
+												else
+												{
+												
+												
+												
+												//printf("Assigning\n");
+												while((c = fgetc(input)) != EOF)
+												{
+												//printf("Assigning2\n");
+													if (c != '\n')
+													{
+														//printf("Assigning %c\n", c);
+														temp[k] = c;
+														k++;
+													}
+													else
+													{
+														//printf("Empty\n");
+														//temp[k] = EOF;
+													}
+												}
+												fclose(input);
+												fflush(stdin);
+												//man(temp);
+												//printf("%s\n", temp);
+												strncpy(temp2,temp,k);
+												//printf("%s\n", temp2);
+												redir_out(my_argv[4]);
+												man(temp);
+												fflush(stdout);
+												//printf("Just Input\n");
+												}
+											}
+											else if(strcmp(my_argv[1] , "<") == 0)
+											{
+												if (my_argv[2] != NULL)
+												{
+													printf("Trying to pass in from file\n");
+													char buffer[100];
+													fgets(buffer, 100, my_argv[2]);
+													printf("Sending to man\n");
+													man(buffer);
+													fflush(stdin);
 												}
 											}
 										}
@@ -651,6 +780,9 @@ int main(int argc, char *argv[], char *envp[])
 									
 									dup2(saved_stdout, 1);
 									close(saved_stdout);
+									
+									dup2(saved_stdin, 0);
+									close(saved_stdin);
 									//printf("man\n");
 								}
 								else if (strcmp(cmd, "quit") == 0)
@@ -716,6 +848,7 @@ int main(int argc, char *argv[], char *envp[])
 								{
 									printf("%s: command not found\n", cmd);
 								}
+								fflush(stdout);
 								dup2(saved_stdout, 1);
 								close(saved_stdout);
 							} 
