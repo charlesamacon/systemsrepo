@@ -272,7 +272,9 @@ void echo(char *argv[], int argc)
 	int err = 0;
 	int j;
 
-	for (i = 1; i < argc - 1; i++)
+	if (argc > 1)
+	{
+	for (i = 1; i < argc; i++)
 	{
 		if (argv[i][0] == '$')
 		{
@@ -300,16 +302,24 @@ void echo(char *argv[], int argc)
 
 			if (err == 1)
 			{
-				printf("\nError: Unrecognized Variable\n");
+					printf("\nError: Unrecognized Variable\n");
+				}
 			}
-		}
-		else if (err == 0)
-		{
-			printf("%s%s", argv[i], " ");
-		}
+			else if (err == 0)
+			{
+				if (argv[i] != NULL)
+				{
+					(void) printf("%s%s", argv[i], " ");
+				}
+			}
 	}
 
-	printf("%s%s", argv[argc - 1], " ");
+	if (argv[i] != NULL)
+				{
+					(void) printf("%s%s", argv[argc], " ");
+				}
+				
+	}
 	return;
 }
 
@@ -408,8 +418,8 @@ int main(int argc, char *argv[], char *envp[])
 							{
 								if (strcmp(cmd, "echo") == 0)
 								{
-									//echo();
-									printf("Echo\n");
+									echo(my_argv, argc+1);
+									//printf("Echo\n");
 								}
 								else if (strcmp(cmd, "cpusage") == 0)
 								{
