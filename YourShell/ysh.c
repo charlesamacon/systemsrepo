@@ -223,7 +223,7 @@ void free_argv()
 	}
 }
 
-void assign_variable(char *var, char value)
+void assign_variable(char var[], char value[])
 {
 	// This should only be called when there is an = in the command line
 	// Example:
@@ -238,10 +238,32 @@ void assign_variable(char *var, char value)
 	//C++ lets you declare it as part of the for loop declaration, C does not, however.
 	//-CAM
 	int i;
-
+	int found = 0;
+	
+	for (i = 1; i < 100; i++)
+	{
+		if (strcmp(myvar[i].varName, var) == 0)
+		{
+			int r = 0;
+			
+			for (r; r < 15; r++)
+			{
+				myvar[i].varData[r] = '\0';
+			}
+			strncpy(myvar[i].varName, var, strlen(var));
+			strncpy(myvar[i].varData, value, strlen(value));
+			found = 1;
+			//my_var[i].var = var;
+			//my_var[i][0] = value;
+			break;
+		}
+	}
+	
+	if (found == 0)
+	{
 	for (i= 1; i < 100; i++)
 	{
-		if (myvar[i].varName == NULL)
+		if (myvar[i].varName[0] == '\0')
 		{
 			// This doesn't make sense, and I'm exhausted from work. Can anyone pick this up? Basically, we need to store var and its value, but I can't put 2 and 2 together right now.
 			strncpy(myvar[i].varName, var, strlen(var));
@@ -251,6 +273,7 @@ void assign_variable(char *var, char value)
 			break;
 		}
 
+	}
 	}
 }
 
@@ -301,7 +324,7 @@ void echo(char *argv[], int argc)
 			}
 
 			if (err == 1)
-			{
+				{
 					printf("\nError: Unrecognized Variable\n");
 				}
 			}
@@ -312,7 +335,7 @@ void echo(char *argv[], int argc)
 					(void) printf("%s%s", argv[i], " ");
 				}
 			}
-	}
+		}
 
 	if (argv[i] != NULL)
 				{
@@ -414,12 +437,62 @@ int main(int argc, char *argv[], char *envp[])
 							strncpy(cmd, my_argv[0], strlen(my_argv[0]));
 							strncat(cmd, "\0", 1);
 							
-							if(index(cmd, '/') == NULL)		
+							if (strcmp(my_argv[1], "=") == 0)
+							{
+								assign_variable(my_argv[0],my_argv[2]);
+							}
+							else if(index(cmd, '/') == NULL)		
 							{
 								if (strcmp(cmd, "echo") == 0)
 								{
-									echo(my_argv, argc+1);
-									//printf("Echo\n");
+									//echo(my_argv, argc+1);
+									int it = 1;
+									
+									for (it; my_argv[it] != NULL; it++)
+									{
+										if (my_argv[it][0] == '$')
+										{
+											// Check and print variable.
+											//printf("VAR ");
+											
+											int err = 1;
+											int j;
+											char buffer[15];
+
+											int k;
+
+											for (k = 0; k < 15; k++)
+											{
+												if (my_argv[it][k] != '\0')
+												{
+													buffer[k] = my_argv[it][k+1];
+												}
+											}
+
+											for (j = 0; j < 100; j++)
+											{
+												//printf("%d\n", j);
+												//printf("%s\n", myvar[j].varName);
+												if (strcmp(buffer, myvar[j].varName) == 0)
+												{
+													printf("%s%s", myvar[j].varData, " ");
+													err = 0;
+												}
+											}
+	
+											if (err == 1)
+											{
+												printf("$UNKNOWN_VAR ");
+											}
+										}
+										else
+										{
+											printf("%s ", my_argv[it]);
+										}
+									}
+									
+									printf("\n");
+
 								}
 								else if (strcmp(cmd, "cpusage") == 0)
 								{
