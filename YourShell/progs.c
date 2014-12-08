@@ -76,10 +76,11 @@ void man(char argv[])
 			"echo LONG - OPTION\n\n"
 			"Description\n\n"
 			"Echo the STRING(s) to standard output.\n\n"
-			"- n		do not output the trailing newline\n"
-			"- e 		enable interpretation of backslash escapes\n"
-			"- E 		disable interpretation of backslash escapes(default)\n"
-			"--help		display this page and exit\n");
+			"Echo also supports the use of variables.\n\n"
+			"Example:\n\n"
+			"[SSSH ] variable = 4\n"
+			"[SSSH ] echo variable equals $variable\n"
+			"variable equals 4\n\n");
 	}
 	else if (strcmp(man, "-cpusage") == 0)
 	{
@@ -93,9 +94,7 @@ void man(char argv[])
 			"This is associated with a background process that uses the top command\n"
 			"to get a 'snapshot' of the CPU usage every hour and log it.cpusage\n"
 			"is then able to access this log and return an averaged value from it.\n\n"
-			"Options are currently not implemented or decided upon.\n"
-			"- cL	clear log\n"
-			"--help	display this help page and exit\n");
+			"Options are currently not implemented or decided upon.\n");
 	}
 	else if (strcmp(man, "-man") == 0)
 	{
@@ -116,8 +115,38 @@ void man(char argv[])
 			"cpusage\n"
 			"man\n\n"
 			"Examples\n\n"
-			"man ls\n"
+			"man -ls\n"
 			"Display the manual page for the program ls.\n");
+	}
+	else if (strcmp(man, "-superBash") == 0)
+	{
+		printf("superBash\n");
+	}
+	else if (strcmp(man, "-strToBinary") == 0)
+	{
+		printf("strToBinary\n");
+	}
+	else if (strcmp(man, "-XOR") == 0)
+	{
+		printf("XOR\n");
+	}
+	else if (strcmp(man, "-cd") == 0)
+	{
+		printf("cd\n");
+	}
+	else if (strcmp(man, "-quit") == 0)
+	{
+		printf("quit			User Commands\n\n"
+				"Name\n"
+				"quit - quits the shell\n\n"
+				"Synopsis\n"
+				"quit\n\n"
+				"Description\n\n"
+				"Frees all memory and exits out of the shell. Like it should.\n");
+	}
+	else
+	{
+		printf("Unknown MAN page, please try again.\n");
 	}
 
 

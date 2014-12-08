@@ -451,6 +451,20 @@ int main(int argc, char *argv[], char *envp[])
 									man(my_argv[1]);
 									//printf("man\n");
 								}
+								else if (strcmp(cmd, "quit") == 0)
+								{
+									// Free all memory
+									// Empty all arrays
+									// Return 0
+									free(tmp);
+									free(path_str);
+									for(i=0;my_envp[i]!=NULL;i++)
+										free(my_envp[i]);
+									for(i=0;i<10;i++)
+										free(search_path[i]);
+									printf("\n");
+									return 0;
+								}
 								else if (my_argv[1] != NULL)
 								{
 									if (strcmp(my_argv[1], "=") == 0)
