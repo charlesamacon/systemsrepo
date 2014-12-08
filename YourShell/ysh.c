@@ -474,7 +474,7 @@ int main(int argc, char *argv[], char *envp[])
 								}
 								else if(attach_path(cmd) == 0) 
 								{
-									if (strcmp(argv[argc - 1],"&"))
+									if (strcmp(argv[argc - 1],"&") == 0)
 									{
 										// If last argv is &, run in background.
 										call_execve_background(cmd);
