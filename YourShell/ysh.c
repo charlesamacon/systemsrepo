@@ -429,7 +429,7 @@ int main(int argc, char *argv[], char *envp[])
 								else if (strcmp(cmd, "XOR") == 0)
 								{
 									xorBinary(my_argv[1],my_argv[2],strlen(my_argv[1]),strlen(my_argv[2]));
-									printf("XOR\n");
+									//printf("XOR\n");
 								}
 								else if (strcmp(cmd, "cd") == 0)
 								{
@@ -438,8 +438,8 @@ int main(int argc, char *argv[], char *envp[])
 								}
 								else if (strcmp(cmd, "man") == 0)
 								{
-									//man();
-									printf("man\n");
+									man(my_argv[1]);
+									//printf("man\n");
 								}
 								else if(attach_path(cmd) == 0) 
 								{

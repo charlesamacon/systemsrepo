@@ -63,7 +63,10 @@ void man(char argv[])
 		}
 	}
 
-	if (strcmp(man, "echo"))
+	//This is a sequence of escape codes that clears the screen.
+	printf("\033[H\033[J");
+	
+	if (strcmp(man, "-echo") == 0)
 	{
 		printf("ECHO			User Commands\n\n"
 			"Name\n"
@@ -78,7 +81,7 @@ void man(char argv[])
 			"- E 		disable interpretation of backslash escapes(default)\n"
 			"--help		display this page and exit\n");
 	}
-	else if (strcmp(man, "cpusage"))
+	else if (strcmp(man, "-cpusage") == 0)
 	{
 		printf("cpusage			User Commands\n\n"
 			"Name\n"
@@ -94,7 +97,7 @@ void man(char argv[])
 			"- cL	clear log\n"
 			"--help	display this help page and exit\n");
 	}
-	else if (strcmp(man, "man"))
+	else if (strcmp(man, "-man") == 0)
 	{
 		printf("man			User Commands\n\n"
 			"Name\n"
@@ -439,7 +442,7 @@ void xorBinary(char arr1[], char arr2[],int size1, int size2){
 		}
 		printf(" ");
 	}
-
+	printf("\n");
 }
 
 void printBinary(int** arr, int len){
