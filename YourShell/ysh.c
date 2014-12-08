@@ -158,6 +158,7 @@ void call_execve(char *cmd)
 			i = execve(cmd, my_argv, my_envp);
 			printf("errno is %d\n", errno);
 			if (i < 0) {
+				printf("POOP\n");
 				printf("%s: %s\n", cmd, "command not found");
 				exit(1);
 			}
@@ -317,12 +318,12 @@ void redir_in(char cmd[])
 	return;
 }
 
-void redir_out(char output[], char file[])
+void redir_out(char file[])
 {
 	// Output (this needs to be read from STD OUT)
 	int out;
 	out = open(file, O_WRONLY | O_CREAT, 0666);
-	write(out, output, strlen(output));
+	//write(out, output, strlen(output));
 	dup2(out, STDOUT_FILENO);
 	close(out);
 	return;
@@ -333,6 +334,8 @@ int main(int argc, char *argv[], char *envp[])
     char c;
 	int i;
 
+	int saved_stdout;
+	saved_stdout = dup(STDOUT_FILENO);
     char *tmp = (char *)malloc(sizeof(char) * 100);
     char *path_str = (char *)malloc(sizeof(char) * 256);
     char *cmd = (char *)malloc(sizeof(char) * 100);
@@ -423,39 +426,158 @@ int main(int argc, char *argv[], char *envp[])
 								}
 								else if (strcmp(cmd, "cpusage") == 0)
 								{
-									//cpusage();
-									printf("Cpusage\n");
+									saved_stdout = dup(STDOUT_FILENO);
+									if (my_argv[1] != NULL)
+										{
+											if (strcmp(my_argv[1], ">") == 0)
+											{
+												if (my_argv[2] != NULL)
+												{
+													// Redirect output to a file.
+													redir_out(my_argv[2]);
+													printf("Cpusage\n");
+													fflush(stdout);
+												}
+											}
+										}
+										else
+										{
+											printf("Cpusage\n");
+										}
+										dup2(saved_stdout, 1);
+										close(saved_stdout);
+										printf("\n");
 								}
 								else if (strcmp(cmd, "superBash") == 0)
 								{
-									//superBash();
-									printf("SuperBash\n");
+									saved_stdout = dup(STDOUT_FILENO);
+									if (my_argv[1] != NULL)
+										{
+											if (strcmp(my_argv[1], ">") == 0)
+											{
+												if (my_argv[2] != NULL)
+												{
+													// Redirect output to a file.
+													redir_out(my_argv[2]);
+													//superBash();
+													printf("SuperBash\n");
+													fflush(stdout);
+												}
+											}
+										}
+										else
+										{
+											//superBash();
+											printf("SuperBash\n");
+										}
+										dup2(saved_stdout, 1);
+										close(saved_stdout);
+										printf("\n");
+									
 								}
 								else if (strcmp(cmd, "strToBinary") == 0)
 								{
-									int** p = strToBinary(my_argv[1]);
-									//printf("strToBinary\n");
+										saved_stdout = dup(STDOUT_FILENO);
+										if (my_argv[2] != NULL)
+										{
+											if (strcmp(my_argv[2], ">") == 0)
+											{
+												if (my_argv[3] != NULL)
+												{
+													// Redirect output to a file.
+													redir_out(my_argv[3]);
+													int** p = strToBinary(my_argv[1]);
+													fflush(stdout);
+												}
+											}
+										}
+										else
+										{
+											int** p = strToBinary(my_argv[1]);
+										}
+										dup2(saved_stdout, 1);
+										close(saved_stdout);
+										printf("\n");
 								}
 								else if (strcmp(cmd, "XOR") == 0)
 								{
-									xorBinary(my_argv[1],my_argv[2],strlen(my_argv[1]),strlen(my_argv[2]));
-									//printf("XOR\n");
+										saved_stdout = dup(STDOUT_FILENO);
+										if(my_argv[3] != NULL)
+										{
+											if (strcmp(my_argv[3], ">") == 0)
+											{
+												if (my_argv[4] != NULL)
+												{
+													redir_out(my_argv[4]);
+													xorBinary(my_argv[1], my_argv[2], strlen(my_argv[1]), strlen(my_argv[2])); 
+													fflush(stdout);
+												}
+											}
+										}
+										else
+										{
+											xorBinary(my_argv[1], my_argv[2], strlen(my_argv[1]), strlen(my_argv[2])); 
+										}
+										
+										dup2(saved_stdout, 1);
+										close(saved_stdout);
 								}
 								else if (strcmp(cmd, "cd") == 0)
 								{
-									//change directory
-									printf("cd\n");
+										saved_stdout = dup(STDOUT_FILENO);
+										if(my_argv[1] != NULL)
+										{
+											if (strcmp(my_argv[1], ">") == 0)
+											{
+												if (my_argv[2] != NULL)
+												{
+													redir_out(my_argv[2]);
+													//change directory
+													printf("cd\n");
+													fflush(stdout);
+												}
+											}
+										}
+										else
+										{
+											//change directory
+											printf("cd\n");
+										}
+										
+										dup2(saved_stdout, 1);
+										close(saved_stdout);
+									
 								}
 								else if (strcmp(cmd, "man") == 0)
 								{
+									saved_stdout = dup(STDOUT_FILENO);
 									if (my_argv[1] != NULL)
 									{
-										man(my_argv[1]);
+										if (my_argv[2] != NULL)
+										{
+											if (strcmp(my_argv[2], ">") == 0)
+											{
+												if (my_argv[3] != NULL)
+												{
+													redir_out(my_argv[3]);
+													//change directory
+													man(my_argv[1]);
+													fflush(stdout);
+												}
+											}
+										}
+										else
+										{
+											man(my_argv[1]);
+										}
 									}
 									else
 									{
 										man("ERR");
 									}
+									
+									dup2(saved_stdout, 1);
+									close(saved_stdout);
 									//printf("man\n");
 								}
 								else if (strcmp(cmd, "quit") == 0)
@@ -472,7 +594,7 @@ int main(int argc, char *argv[], char *envp[])
 									printf("\n");
 									return 0;
 								}
-								else if (my_argv[1] != NULL)
+								else if (my_argv[1] != NULL && strcmp(my_argv[1], "=") == 0)
 								{
 									if (strcmp(my_argv[1], "=") == 0)
 									{
@@ -481,20 +603,46 @@ int main(int argc, char *argv[], char *envp[])
 								}
 								else if(attach_path(cmd) == 0) 
 								{
+									saved_stdout = dup(STDOUT_FILENO);
 									if (strcmp(argv[argc - 1],"&") == 0)
 									{
+										
 										// If last argv is &, run in background.
 										call_execve_background(cmd);
 									}
 									else
 									{
-										call_execve(cmd);
+										if (my_argv[1] != NULL)
+										{
+											if (strcmp(my_argv[1], ">") == 0)
+											{
+												if (my_argv[2] != NULL)
+												{
+													//char *tempcmd = (char *)malloc(sizeof(char) * 100);
+													//strncat(tempcmd, "/bin/" , 5);
+													//strncat(tempcmd, my_argv[0], strlen(my_argv[0]));
+													//strncat(tempcmd, "\0", 1);
+													//strncpy(cmd, my_argv[0], strlen(my_argv[0]));
+													//strncat(cmd, "\0", 1);
+													//redir_out(my_argv[2]);
+													call_execve(cmd);
+													//fflush(stdout);
+												}
+											}
+										}
+										else
+										{
+											call_execve(cmd);
+										}
+										
 									}
 								}
 								else 
 								{
 									printf("%s: command not found\n", cmd);
 								}
+								dup2(saved_stdout, 1);
+								close(saved_stdout);
 							} 
 							else 
 							{
