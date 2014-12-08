@@ -385,7 +385,7 @@ int* charToBinary(char var){
 	return arr;
 }
 
-int** strToBinary(char* str){
+int** strToBinary(char str[]){
 	int i,k;
     int len = strlen(str);
     int** arr = (int **)malloc(len * sizeof(int *));
@@ -400,14 +400,13 @@ int** strToBinary(char* str){
         }
 	}
 	
-	/* PRINTS OUT BINARY STRING
+	//PRINTS OUT BINARY STRING
 	for(i=0;i<len;i++){
 		for(k=0;k<7;k++){
 			printf("%d",arr[i][k]);
 		}
 		printf(" ");
 	}
-	*/
 
 	//printBinary(arr, len); 
 	return arr;

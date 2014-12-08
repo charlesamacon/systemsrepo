@@ -15,7 +15,7 @@ int cd(char input[]);
 void cpuAverage();
 void superBash(int argc, char * argv[]);
 int* charToBinary(char var);
-int** strToBinary(char* str);
+int** strToBinary(char str[]);
 void xorBinary(char arr1[], char arr2[],int size1, int size2);
 void printBinary(int** arr, int len);
 

@@ -277,7 +277,7 @@ void assign_variable(char var[], char value[])
 	}
 }
 
-void execute_pipe(char *argv[], char *args[])
+void execute_pipe(char *arg1[], char *arg2[])
 {
 	// This is to be reworked by Jordan.
 	// While this is the general idea of the thing, a much simpler method was figured out on 11/25/2014.
@@ -437,8 +437,8 @@ int main(int argc, char *argv[], char *envp[])
 								}
 								else if (strcmp(cmd, "strToBinary") == 0)
 								{
-									//strToBinary();
-									printf("strToBinary\n");
+									int** p = strToBinary(my_argv[1]);
+									//printf("strToBinary\n");
 								}
 								else if (strcmp(cmd, "XOR") == 0)
 								{
