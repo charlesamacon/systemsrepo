@@ -71,10 +71,10 @@ void man(char argv[])
 		printf("ECHO			User Commands\n\n"
 			"Name\n"
 			"echo - display a line of text\n\n"
-			"Synopsis\n"
+			"Synopsis:\n"
 			"echo[SHORT - OPTION]...[STRING]...\n"
 			"echo LONG - OPTION\n\n"
-			"Description\n\n"
+			"Description:\n\n"
 			"Echo the STRING(s) to standard output.\n\n"
 			"Echo also supports the use of variables.\n\n"
 			"Example:\n\n"
@@ -87,23 +87,22 @@ void man(char argv[])
 		printf("cpusage			User Commands\n\n"
 			"Name\n"
 			"cpusage - Display the average CPU usage of the past 24 - hour period.\n\n"
-			"Synopsis\n"
+			"Synopsis:\n"
 			"cpusage[SHORT - OPTION]...\n\n"
-			"Description\n\n"
+			"Description:\n\n"
 			"Displays the current average CPU usage of the past 24 - hour period.\n\n"
 			"This is associated with a background process that uses the top command\n"
 			"to get a 'snapshot' of the CPU usage every hour and log it.cpusage\n"
-			"is then able to access this log and return an averaged value from it.\n\n"
-			"Options are currently not implemented or decided upon.\n");
+			"is then able to access this log and return an averaged value from it.\n");
 	}
 	else if (strcmp(man, "-man") == 0)
 	{
 		printf("man			User Commands\n\n"
 			"Name\n"
 			"man - displays the manual page for a given command\n\n"
-			"Synopsis\n"
+			"Synopsis:\n"
 			"man[SHORT - OPTION]...\n\n"
-			"Description\n\n"
+			"Description:\n\n"
 			"man is the system's manual pager. Each page argument given to man is\n"
 			"normally the name of a program, utility or function.The manual page\n"
 			"associated with each of these arguments is then found and displayed.\n\n"
@@ -113,35 +112,71 @@ void man(char argv[])
 			"Currently implemented man pages :\n"
 			"echo\n"
 			"cpusage\n"
-			"man\n\n"
+			"man\n"
+			"quit\n"
+			"strToBinary\n"
+			"superBash\n"
+			"XOR\n"
 			"Examples\n\n"
 			"man -ls\n"
 			"Display the manual page for the program ls.\n");
 	}
 	else if (strcmp(man, "-superBash") == 0)
 	{
-		printf("superBash\n");
+		printf("superBash		User Commands\n\n"
+				"Name\n"
+				"superBash - translates basic c programs to some bash commands\n\n"
+				"Synopsis:\n"
+				"superBash[INPUT]...[OPTIONAL OUTPUT]\n\n"
+				"Description:\n\n"
+				"superBash allows the user to translate very basic (and very specific)\n"
+				"c programs into a format that is usable by bash. This is mainly a translator\n"
+				"for programs that make use of loops.\n\n"
+				"Example:\n\n"
+				"superBash input frank\n"
+				"This will read in file input and output to file frank\n");
 	}
 	else if (strcmp(man, "-strToBinary") == 0)
 	{
-		printf("strToBinary\n");
+		printf("strToBinary		User Commands\n\n"
+				"Name\n"
+				"strToBinary - returns a binary translation of a string\n\n"
+				"Synopsis:\n"
+				"strToBinary [STRING]\n\n"
+				"Description:\n\n"
+				"strToBinary returns a character-by-character binary translation of\n"
+				"and ASCII string\n\n"
+				"Example:\n\n"
+				"strToBinary frank\n"
+				"Returns 1100110 1110010 1100001 1101110 1101011\n");
 	}
 	else if (strcmp(man, "-XOR") == 0)
 	{
-		printf("XOR\n");
+		printf("XOR			User Commands\n\n"
+				"Name\n"
+				"XOR - returns the XOR value of two strings\n\n"
+				"Synopsis:\n"
+				"XOR [STRING 1] ... [STRING 2]\n\n"
+				"Description:\n\n"
+				"XOR returns the XOR value (in binary) of two strings to determine\n"
+				"whether or not each character is different. XOR takes the length of\n"
+				"of the shortest string\n"
+				"Example:\n\n"
+				"XOR frank franz\n"
+				"Returns 0 0 0 0 1\n");
 	}
 	else if (strcmp(man, "-cd") == 0)
 	{
-		printf("cd\n");
+		printf("THIS FEATURE IS NOT YET IMPLEMENTED.\n");
 	}
 	else if (strcmp(man, "-quit") == 0)
 	{
 		printf("quit			User Commands\n\n"
 				"Name\n"
 				"quit - quits the shell\n\n"
-				"Synopsis\n"
+				"Synopsis:\n"
 				"quit\n\n"
-				"Description\n\n"
+				"Description:\n\n"
 				"Frees all memory and exits out of the shell. Like it should.\n");
 	}
 	else
