@@ -26,6 +26,7 @@ struct variable
 	char varData[25];
 };
 static char *my_argv[100], *my_envp[100], *my_var[100];			// Added array for variables (for echo to use)
+static char *temp_argv[100];
 static char *search_path[10];
 static struct variable myvar[100];
 
@@ -64,6 +65,30 @@ void fill_argv(char *tmp_argv)
     my_argv[index] = (char *)malloc(sizeof(char) * strlen(ret) + 1);
     strncpy(my_argv[index], ret, strlen(ret));
     strncat(my_argv[index], "\0", 1);
+}
+
+void fill_temp_argv(int index)
+{
+	int i = 0;
+	int j = index;
+	
+	//printf("While not null\n");
+	while (my_argv[j] != NULL)
+	{
+		if (strcmp(my_argv[j],"|") != 0)
+		{
+			//printf("Copy\n");
+			temp_argv[i] = my_argv[j];
+			//strncpy(temp_argv[i], my_argv[j], strlen(my_argv[i]));
+			//printf("Iterate\n");
+			i++;
+			j++;
+		}
+		else
+		{
+			break;
+		}
+	}
 }
 
 void copy_envp(char **envp)
@@ -156,6 +181,36 @@ void call_execve(char *cmd)
 				//outRedir = 0;	// Reset this
 			}
 			i = execve(cmd, my_argv, my_envp);
+			printf("errno is %d\n", errno);
+			if (i < 0) {
+				printf("%s: %s\n", cmd, "command not found");
+				exit(1);
+			}
+	}
+	else {
+		wait(NULL);
+	}
+}
+
+void call_execve2(char *cmd)
+{
+    int i;
+	// Only run if last command in argv is not '&'
+	printf("cmd is %s\n", cmd);
+	if (fork() == 0) 
+	{
+			// Need to create a boolean type thing to check this
+			if (outRedir == 1)
+			{
+				//int fd = open([FILENAME], O_RDWR | O_CREAT, S_IRUSR | S_IWUSR);
+
+				//dup2(fd, 1);	// make stdout go to file
+				
+				//close (fd);
+
+				//outRedir = 0;	// Reset this
+			}
+			i = execve(cmd, temp_argv, my_envp);
 			printf("errno is %d\n", errno);
 			if (i < 0) {
 				printf("%s: %s\n", cmd, "command not found");
@@ -279,7 +334,56 @@ void assign_variable(char var[], char value[])
 
 void execute_function(int argIndex, int out, int in)
 {
-	printf("Executing function: %s\n", my_argv[argIndex]);
+	//We should only call functions this way.
+	//We'll need another method for calling cmds (call_exceve)
+	//We just need to figure out a way to differentiate between them
+	char *cmd = (char *)malloc(sizeof(char) * 100);
+	if (strcmp(my_argv[argIndex],"echo") == 0 || strcmp(my_argv[argIndex],"cpusage") == 0 || 
+		strcmp(my_argv[argIndex],"superBash") == 0 || strcmp(my_argv[argIndex],"strToBinary") == 0 ||
+		strcmp(my_argv[argIndex],"XOR") == 0 || strcmp(my_argv[argIndex],"cd") == 0 || 
+		strcmp(my_argv[argIndex],"man") == 0 || strcmp(my_argv[argIndex],"quit") == 0)
+		{
+			printf("Executing function: %s\n", my_argv[argIndex]);
+		}
+	else if (strcmp(my_argv[argIndex], "|") == 0)
+	{
+		printf("Error: Unrecognized Command\n");
+	}
+	else
+	{
+		if (my_argv[argIndex - 1] != NULL)
+		{
+			if (strcmp(my_argv[argIndex - 1], "|") != 0)
+			{
+				execute_function (argIndex - 1, out, in);
+			}
+			else
+			{
+				printf("Move to cmd2\n");
+				strncpy(cmd, my_argv[argIndex], strlen(my_argv[argIndex]));
+				strncat(cmd, "\0", 1);
+				fill_temp_argv(argIndex);
+				if (attach_path(cmd) == 0)
+				{
+					call_execve2(cmd);
+				}
+			}
+		}
+		else
+		{
+			printf("Move to cmd\n");
+			strncpy(cmd, my_argv[argIndex], strlen(my_argv[argIndex]));
+			strncat(cmd, "\0", 1);
+			printf("Fill Temp Argv\n");
+			fill_temp_argv(argIndex);
+			if (attach_path(cmd) == 0)
+			{
+				printf("Call Execve 2\n");
+				call_execve2(cmd);
+			}
+			//printf("Error22: Unrecognized Command\n");
+		}
+	}
 	return;
 }
 
