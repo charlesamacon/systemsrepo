@@ -240,6 +240,17 @@ void cpuRead(){ //Call this to print cpu usage
 	return;
 }
 
+float cpuReadFloat(){
+	float loadavg,time;
+	FILE* fp;
+	
+	fp = fopen("cpuStats","r");
+	fscanf(fp,"%f %f", &loadavg, &time);
+	fclose(fp);
+	
+	return loadavg;
+}
+
 	// Change directory action, "cd"
 	// Very, very baby version of it but it's not hard to do. Reading through to find what variables are named what
 	// all I have to do is use the chdir declaration and then specify where we want it to go i.e. what is inputted

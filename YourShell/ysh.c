@@ -759,12 +759,12 @@ void execute_function(int argIndex, int out, int in)
 				if(outBool = 1)
 				{
 					redir_out(my_argv[argIndex + 2]);
-					printf("Cpusage\n");
+					cpuRead();
 				}
 				else
 				{
 					//CPUsage
-					printf("Cpusage\n");
+					cpuRead();
 				}
 			}
 			// Flush stdout and reset its file descriptor.
