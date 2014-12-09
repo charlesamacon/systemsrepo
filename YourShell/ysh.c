@@ -739,6 +739,7 @@ void execute_function(int argIndex, int out, int in)
 					fill_temp_argv(argIndex);
 					if (attach_path(cmd) == 0)
 					{
+						printf("Path attached\n");
 					// Incidentally, this actually works better than the original
 					// YSH method of handling Linux commands. For whatever reason,
 					// this actually allows for command line options.
@@ -1020,21 +1021,27 @@ int main(int argc, char *argv[], char *envp[])
 											{
 												if (my_argv[2] != NULL)
 												{
-													//char *tempcmd = (char *)malloc(sizeof(char) * 100);
-													//strncat(tempcmd, "/bin/" , 5);
-													//strncat(tempcmd, my_argv[0], strlen(my_argv[0]));
-													//strncat(tempcmd, "\0", 1);
+													char *tempcmd = (char *)malloc(sizeof(char) * 100);
+													strncpy(tempcmd, "/bin/" , 5);
+													strncat(tempcmd, my_argv[0], strlen(my_argv[0]));
+													strncat(tempcmd, "\0", 1);
 													//strncpy(cmd, my_argv[0], strlen(my_argv[0]));
 													//strncat(cmd, "\0", 1);
 													//redir_out(my_argv[2]);
-													call_execve(cmd);
+													execute_function(0,0,0);
+													//call_execve2(tempcmd);
 													//fflush(stdout);
 												}
+											}
+											else
+											{
+												execute_function(0,0,0);
 											}
 										}
 										else
 										{
-											call_execve(cmd);
+										
+											execute_function(0,0,0);
 										}
 										
 									}
