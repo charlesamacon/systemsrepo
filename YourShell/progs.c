@@ -264,7 +264,7 @@ void cpuAverage(){ //Returns first float of the file cpuLoad
 }
 
 // SuperBash
-void superBash(int argc, char * argv[])
+void superBash(int argc, char argv[])
 {
 	// This is a line for line copy of the superbash program. Except we need to fix the segmentation faults.
 	FILE *input;
@@ -280,7 +280,7 @@ void superBash(int argc, char * argv[])
 
 	//----------------------------Open File Input-----------------------------------
 
-	input = fopen(argv[1], "r");  //Opens the file listed on the command line call for reading
+	input = fopen(argv[0], "r");  //Opens the file listed on the command line call for reading
 
 	while ((c = fgetc(input)) != EOF){  //Copies file to 2d character array string
 		if (c != '\n'){

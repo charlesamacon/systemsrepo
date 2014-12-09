@@ -29,6 +29,13 @@ static char *my_argv[100], *my_envp[100], *my_var[100];			// Added array for var
 static char *temp_argv[100];
 static char *search_path[10];
 static struct variable myvar[100];
+int outBool = 0;
+int inBool = 0;
+int pipeBool = 0;				
+int outCheck = 1;
+int inCheck = 1;
+int pipeCheck = 1;
+int pipeIndex = 0;
 
 void handle_signal(int signo)
 {
@@ -332,89 +339,6 @@ void assign_variable(char var[], char value[])
 	}
 }
 
-void execute_function(int argIndex, int out, int in)
-{
-	//We should only call functions this way.
-	//We'll need another method for calling cmds (call_exceve)
-	//We just need to figure out a way to differentiate between them
-	char *cmd = (char *)malloc(sizeof(char) * 100);
-	if (strcmp(my_argv[argIndex],"echo") == 0 || strcmp(my_argv[argIndex],"cpusage") == 0 || 
-		strcmp(my_argv[argIndex],"superBash") == 0 || strcmp(my_argv[argIndex],"strToBinary") == 0 ||
-		strcmp(my_argv[argIndex],"XOR") == 0 || strcmp(my_argv[argIndex],"cd") == 0 || 
-		strcmp(my_argv[argIndex],"man") == 0 || strcmp(my_argv[argIndex],"quit") == 0)
-		{
-			printf("Executing function: %s\n", my_argv[argIndex]);
-		}
-	else if (strcmp(my_argv[argIndex], "|") == 0)
-	{
-		printf("Error: Unrecognized Command\n");
-	}
-	else
-	{
-		if (my_argv[argIndex - 1] != NULL)
-		{
-			if (strcmp(my_argv[argIndex - 1], "|") != 0)
-			{
-				execute_function (argIndex - 1, out, in);
-			}
-			else
-			{
-				printf("Move to cmd2\n");
-				strncpy(cmd, my_argv[argIndex], strlen(my_argv[argIndex]));
-				strncat(cmd, "\0", 1);
-				fill_temp_argv(argIndex);
-				if (attach_path(cmd) == 0)
-				{
-					call_execve2(cmd);
-				}
-			}
-		}
-		else
-		{
-			printf("Move to cmd\n");
-			strncpy(cmd, my_argv[argIndex], strlen(my_argv[argIndex]));
-			strncat(cmd, "\0", 1);
-			printf("Fill Temp Argv\n");
-			fill_temp_argv(argIndex);
-			if (attach_path(cmd) == 0)
-			{
-				printf("Call Execve 2\n");
-				call_execve2(cmd);
-			}
-			//printf("Error22: Unrecognized Command\n");
-		}
-	}
-	return;
-}
-
-void execute_pipe(int arg1Index, int arg2Index, int pipeI)
-{
-	// This is to be reworked by Jordan.
-	// While this is the general idea of the thing, a much simpler method was figured out on 11/25/2014.
-
-	printf("Executing Pipe\n");
-
-	int fds[2];
-	//pipe(fds);
-
-	execute_function(arg1Index, 1, 0);
-	execute_function(arg2Index, 0, 1);
-	
-	/*if (fork())
-	{
-		//dup2(fds[1], STDOUT_FILENO);
-		//call_execve(arg1);
-	}
-	else
-	{
-		//dup2(fds[0], STDIN_FILENO);
-		//call_exceve(arg2);
-	}*/
-	return;
-}
-
-
-
 void redir_in(char file[])
 {
 	// if redirecting I/O
@@ -427,6 +351,8 @@ void redir_in(char file[])
 	in = open(file, O_RDONLY);
 	dup2(in, STDIN_FILENO);
 	close(in);
+	inBool = 0;
+	inCheck = 1;
 	return;
 }
 
@@ -438,8 +364,512 @@ void redir_out(char file[])
 	//write(out, output, strlen(output));
 	dup2(out, STDOUT_FILENO);
 	close(out);
+	outBool = 0;
+	inCheck = 1;
 	return;
 }
+void execute_function(int argIndex, int out, int in)
+{
+
+	//We should only call functions this way.
+	//We'll need another method for calling cmds (call_exceve)
+	//We just need to figure out a way to differentiate between them
+	int saved_stdout;
+	int saved_stdin;
+	saved_stdout = dup(STDOUT_FILENO);
+	saved_stdin = dup(STDIN_FILENO);
+
+		char *cmd = (char *)malloc(sizeof(char) * 100);
+		if (strcmp(my_argv[argIndex],"echo") == 0 || strcmp(my_argv[argIndex],"cpusage") == 0 || 
+		strcmp(my_argv[argIndex],"superBash") == 0 || strcmp(my_argv[argIndex],"strToBinary") == 0 ||
+		strcmp(my_argv[argIndex],"XOR") == 0 || strcmp(my_argv[argIndex],"cd") == 0 || 
+		strcmp(my_argv[argIndex],"man") == 0 || strcmp(my_argv[argIndex],"quit") == 0)
+		{
+			printf("Executing function: %s\n", my_argv[argIndex]);
+			
+			//XOR
+			if (strcmp(my_argv[argIndex], "XOR") == 0)
+			{
+				saved_stdout = dup(STDOUT_FILENO);
+				if(my_argv[argIndex + 3] != NULL)
+				{
+					if (strcmp(my_argv[argIndex + 3], ">") == 0)
+					{
+						if (my_argv[argIndex + 4] != NULL)
+						{
+							redir_out(my_argv[argIndex + 4]);
+							xorBinary(my_argv[argIndex + 1], my_argv[argIndex + 2], strlen(my_argv[argIndex + 1]), strlen(my_argv[argIndex + 2])); 
+							fflush(stdout);
+						}
+					}
+				}
+				else
+				{
+						xorBinary(my_argv[argIndex + 1], my_argv[argIndex + 2], strlen(my_argv[argIndex + 1]), strlen(my_argv[argIndex + 2])); 
+				}
+										
+				dup2(saved_stdout, 1);
+				close(saved_stdout);
+			}// END XOR
+			
+			// strToBinary
+			else if (strcmp(my_argv[argIndex], "strToBinary") == 0)
+			{
+				saved_stdout = dup(STDOUT_FILENO);
+				if (my_argv[argIndex + 2] != NULL)
+				{
+					if (strcmp(my_argv[argIndex + 2], ">") == 0)
+					{
+						if (my_argv[argIndex + 3] != NULL)
+						{
+							// Redirect output to a file.
+							redir_out(my_argv[argIndex + 3]);
+							int** p = strToBinary(my_argv[argIndex + 1]);
+							fflush(stdout);
+						}
+					}
+				}
+				else
+				{
+					int** p = strToBinary(my_argv[argIndex + 1]);
+				}
+				dup2(saved_stdout, 1);
+				close(saved_stdout);
+				printf("\n");
+			} // end strToBinary
+			 
+			 // echo
+			else if (strcmp(my_argv[argIndex], "echo") == 0)
+			{
+												//echo(my_argv, argc+1);
+									saved_stdout = dup(STDOUT_FILENO);
+									int it = 1;
+									int it2 = 1;
+									int redirOut = 0;
+									int myargc2 = 0;
+									
+									for (it2; my_argv[argIndex + it2] != NULL; it2++)
+									{
+										if (strcmp(my_argv[argIndex + it2], ">") == 0)
+										{
+											redirOut = 1;
+										}
+										myargc2++;
+									}
+									
+									if (redirOut == 1)
+									{
+										redir_out(my_argv[argIndex + myargc2]);
+										for (it; my_argv[argIndex + it] != NULL; it++)
+										{
+											if (my_argv[argIndex + it][0] == '$')
+											{
+												// Check and print variable.
+												//printf("VAR ");
+											
+												int err = 1;
+												int j;
+												char buffer[15];
+
+												int k;
+
+												for (k = 0; k < 15; k++)
+												{
+													if (my_argv[argIndex + it][k] != '\0')
+													{
+														buffer[k] = my_argv[argIndex + it][k+1];
+													}
+												}
+
+												for (j = 0; j < 100; j++)
+												{
+													//printf("%d\n", j);
+													//printf("%s\n", myvar[j].varName);
+													if (strcmp(buffer, myvar[j].varName) == 0)
+													{
+														printf("%s%s", myvar[j].varData, " ");
+														err = 0;
+													}
+												}
+	
+												if (err == 1)
+												{
+													printf("$UNKNOWN_VAR ");
+												}
+											}
+											else
+											{
+												if (it < myargc2 - 1)
+												{
+													printf("%s ", my_argv[argIndex + it]);
+												}
+											}
+										}
+										fflush(stdout);
+									}
+									else
+									{
+										for (it; my_argv[argIndex + it] != NULL; it++)
+										{
+											if (my_argv[argIndex + it][0] == '$')
+											{
+												// Check and print variable.
+												//printf("VAR ");
+											
+												int err = 1;
+												int j;
+												char buffer[15];
+
+												int k;
+
+												for (k = 0; k < 15; k++)
+												{
+													if (my_argv[argIndex + it][k] != '\0')
+													{
+														buffer[k] = my_argv[argIndex + it][k+1];
+													}
+												}
+
+												for (j = 0; j < 100; j++)
+												{
+													//printf("%d\n", j);
+													//printf("%s\n", myvar[j].varName);
+													if (strcmp(buffer, myvar[j].varName) == 0)
+													{
+														printf("%s%s", myvar[j].varData, " ");
+														err = 0;
+													}
+												}
+	
+												if (err == 1)
+												{
+													printf("$UNKNOWN_VAR ");
+												}
+											}
+											else
+											{
+												printf("%s ", my_argv[argIndex + it]);
+											}
+										}
+									}
+									dup2(saved_stdout, 1);
+									close(saved_stdout);
+									printf("\n");
+
+			} // end echo
+			
+			// man
+			else if (strcmp(my_argv[argIndex], "man") == 0)
+			{
+			saved_stdout = dup(STDOUT_FILENO);
+									saved_stdin = dup(STDIN_FILENO);
+									if (my_argv[argIndex + 1] != NULL)
+									{
+										if (my_argv[argIndex + 2] != NULL)
+										{
+											if (outBool == 1 && inBool == 0)
+											{
+												if (my_argv[argIndex + 3] != NULL)
+												{
+													redir_out(my_argv[argIndex + 3]);
+													//change directory
+													man(my_argv[argIndex + 1]);
+												}
+											}
+											else if (outBool == 0 && inBool == 1)
+											{
+												printf("Input\n");
+												FILE *input;
+												char c;
+												char temp[25];
+												char temp2[25];
+												int k = 0;
+												printf("Init Input\n");
+												input = fopen(my_argv[argIndex + 2], "r");
+												
+												if (input == NULL)
+												{
+													// For Some reason, it doesn't always work.
+													printf("Error opening file\n");
+													printf("Sometimes you have to try again\n");
+												}
+												else
+												{
+													printf("Input not null\n");
+													int l = 0;
+													while((c = fgetc(input)) != EOF)
+													{
+														if (c != '\n')
+														{
+															temp[k] = c;
+															k++;
+														}
+													else
+													{
+														//Don't
+													}
+												}
+												fclose(input);
+												fflush(stdin);
+												strncpy(temp2,temp,k);
+												printf("%s\n%s\n",temp, temp2);
+												man(temp2);
+												//fclose(input);
+												}
+											}
+											else if (outBool == 1 && inBool == 1)
+											{
+												// Do both (input then output)
+												FILE *input;
+												char c;
+												char temp[25];
+												char temp2[25];
+												int k = 0;
+												input = fopen(my_argv[argIndex + 2], "r");
+												
+												if (input == NULL)
+												{
+													printf("Error opening file\n");
+													printf("Sometimes you have to try again\n");
+												}
+												else
+												{
+												while((c = fgetc(input)) != EOF)
+												{
+													if (c != '\n')
+													{
+														temp[k] = c;
+														k++;
+													}
+													else
+													{
+														//Don't
+													}
+												}
+												fclose(input);
+												fflush(stdin);
+												strncpy(temp2,temp,k);
+												redir_out(my_argv[argIndex + 4]);
+												man(temp2);
+												fflush(stdout);
+												}
+											}
+										}
+										else
+										{
+											man(my_argv[argIndex + 1]);
+										}
+									}
+									else
+									{
+										man("ERR");
+									}
+									
+									dup2(saved_stdout, 1);
+									close(saved_stdout);
+									
+									dup2(saved_stdin, 0);
+									close(saved_stdin);
+			} // end man
+			
+			// superBash
+			else if (strcmp(my_argv[argIndex], "superBash") == 0)
+			{
+				if(outBool == 1)
+				{
+					if (my_argv[argIndex + 3] != NULL)
+					{
+						redir_out(my_argv[argIndex + 1]);
+						superBash(0, my_argv[argIndex + 3]);
+						printf("superBash\n");
+					}
+					else
+					{
+						printf("Error: No file to redirect to\n");
+					}
+				}
+				else
+				{
+						//redir_out(my_argv[argIndex + 2]);
+						superBash(0, my_argv[argIndex + 1]);
+						printf("superBash\n");
+
+				}					
+			} // end superBash
+			
+			// cd
+			else if (strcmp(my_argv[argIndex], "cd") == 0)
+			{
+				saved_stdout = dup(STDOUT_FILENO);
+				if(outBool = 1)
+				{
+					redir_out(my_argv[argIndex + 2]);
+					printf("cd\n");
+				}
+				else
+				{
+					//change directory
+					printf("cd\n");
+				}
+			} // end cd
+			else if (strcmp(my_argv[argIndex], "cpusage") == 0)
+			{
+				saved_stdout = dup(STDOUT_FILENO);
+				if(outBool = 1)
+				{
+					redir_out(my_argv[argIndex + 2]);
+					printf("Cpusage\n");
+				}
+				else
+				{
+					//CPUsage
+					printf("Cpusage\n");
+				}
+			}
+			// Flush stdout and reset its file descriptor.
+			fflush(stdout);
+			dup2(saved_stdout, 1);
+			close(saved_stdout);
+		}
+		else if (strcmp(my_argv[argIndex], "|") == 0)
+		{
+			printf("Error: Unrecognized Command\n");
+		}
+		else
+		{
+			if (my_argv[argIndex - 1] != NULL)
+			{
+				if (strcmp(my_argv[argIndex - 1], "|") != 0)
+				{
+					execute_function (argIndex - 1, out, in);
+				}
+				else
+				{
+					printf("Move to cmd2\n");
+					strncpy(cmd, my_argv[argIndex], strlen(my_argv[argIndex]));
+					strncat(cmd, "\0", 1);
+					fill_temp_argv(argIndex);
+					if (attach_path(cmd) == 0)
+					{
+					// Incidentally, this actually works better than the original
+					// YSH method of handling Linux commands. For whatever reason,
+					// this actually allows for command line options.
+						call_execve2(cmd);
+					}
+				}
+			}
+			else
+			{
+				printf("Move to cmd\n");
+				strncpy(cmd, my_argv[argIndex], strlen(my_argv[argIndex]));
+				strncat(cmd, "\0", 1);
+				printf("Fill Temp Argv\n");
+				fill_temp_argv(argIndex);
+				if (attach_path(cmd) == 0)
+				{
+					printf("Call Execve 2\n");
+					call_execve2(cmd);
+				}
+				//printf("Error22: Unrecognized Command\n");
+			}
+		}
+	return;
+}
+
+void execute_pipe(int arg1Index, int arg2Index, int pipeI)
+{
+	// This is to be reworked by Jordan.
+	// While this is the general idea of the thing, a much simpler method was figured out on 11/25/2014.
+	
+	printf("Executing Pipe\n");
+
+	
+	int i = 0;
+	int j = 0;
+	
+	//pipe(fds);
+	
+	if (strcmp(my_argv[arg1Index],"echo") == 0 || strcmp(my_argv[arg1Index],"cpusage") == 0 || 
+		strcmp(my_argv[arg1Index],"superBash") == 0 || strcmp(my_argv[arg1Index],"strToBinary") == 0 ||
+		strcmp(my_argv[arg1Index],"XOR") == 0 || strcmp(my_argv[arg1Index],"cd") == 0 || 
+		strcmp(my_argv[arg1Index],"man") == 0 || strcmp(my_argv[arg1Index],"quit") == 0)
+		{
+			printf("Executing function: %s\n", my_argv[arg1Index]);
+			execute_function(arg1Index, 1, 0);
+			i = 1;
+		}
+	
+	if (strcmp(my_argv[arg2Index],"echo") == 0 || strcmp(my_argv[arg2Index],"cpusage") == 0 || 
+		strcmp(my_argv[arg2Index],"superBash") == 0 || strcmp(my_argv[arg2Index],"strToBinary") == 0 ||
+		strcmp(my_argv[arg2Index],"XOR") == 0 || strcmp(my_argv[arg2Index],"cd") == 0 || 
+		strcmp(my_argv[arg2Index],"man") == 0 || strcmp(my_argv[arg2Index],"quit") == 0)
+		{
+			printf("Executing function: %s\n", my_argv[arg2Index]);
+			execute_function(arg2Index, 0, 1);
+			j = 1;
+		}
+		
+	if (i == 0 && j == 0)
+	{
+	char *cmd = (char *)malloc(sizeof(char) * 100);
+	char *cmd2 = (char *)malloc(sizeof(char) * 100);
+	int fds[2];
+	int status;
+	pipe(fds);
+	if (fork())
+	{
+		//dup2(fds[1],STDOUT_FILENO);
+		//execute_function(arg1Index, 1, 0);
+		strncpy(cmd, my_argv[arg1Index], strlen(my_argv[arg1Index]));
+					strncat(cmd, "\0", 1);
+					fill_temp_argv(arg1Index);
+					if (attach_path(cmd) == 0)
+					{
+					// Incidentally, this actually works better than the original
+					// YSH method of handling Linux commands. For whatever reason,
+					// this actually allows for command line options.
+						call_execve2(cmd);
+					}
+	}
+	else
+	{
+		//dup2(fds[0], STDIN_FILENO);
+		//execute_function(arg2Index, 0, 1);
+		strncpy(cmd2, my_argv[arg2Index], strlen(my_argv[arg2Index]));
+					strncat(cmd2, "\0", 1);
+					fill_temp_argv(arg2Index);
+					if (attach_path(cmd2) == 0)
+					{
+					// Incidentally, this actually works better than the original
+					// YSH method of handling Linux commands. For whatever reason,
+					// this actually allows for command line options.
+						call_execve2(cmd2);
+					}
+	}
+
+	int c = close(fds);
+	}
+	//execute_function(arg1Index, 1, 0);
+	//execute_function(arg2Index, 0, 1);
+	
+	//if (fork() == 0)
+	//{
+		//dup2(fds[1], STDOUT_FILENO);
+		
+		//call_execve(arg1);
+	//}
+	//else
+	//{
+		//dup2(fds[0], STDIN_FILENO);
+		
+		//call_exceve(arg2);
+	//}
+	return;
+}
+
+
+
+
 
 int main(int argc, char *argv[], char *envp[])
 {
@@ -494,14 +924,9 @@ int main(int argc, char *argv[], char *envp[])
 							
 							if(index(cmd, '/') == NULL)		
 							{			
-								int outBool = 0;
-								int inBool = 0;
-								int pipeBool = 0;
+								
+								
 								saved_stdout = dup(STDOUT_FILENO);
-								int outCheck = 1;
-								int inCheck = 1;
-								int pipeCheck = 1;
-								int pipeIndex = 0;
 								
 								// Check to see if we're redirecting output.
 								for (outCheck; outCheck < myargc; outCheck++)
@@ -518,6 +943,8 @@ int main(int argc, char *argv[], char *envp[])
 									}
 								}
 								
+								outCheck = 1;
+								
 								// Check to see if we're redirecting input
 								for (inCheck; inCheck < myargc; inCheck++)
 								{
@@ -533,6 +960,7 @@ int main(int argc, char *argv[], char *envp[])
 									}
 								}
 								
+								inCheck = 1;
 								// Check for pipes
 								for (pipeCheck; pipeCheck < myargc; pipeCheck++)
 								{
@@ -548,385 +976,18 @@ int main(int argc, char *argv[], char *envp[])
 										}
 									}
 								}
-								
+								pipeCheck = 0;
 								if (pipeBool == 1)
 								{
 									execute_pipe(pipeIndex - 1, pipeIndex + 1, pipeIndex);
 								}
 								else
 								{
-								if (strcmp(cmd, "echo") == 0)
+								if (strcmp(cmd, "superBash") == 0 || strcmp(cmd, "strToBinary") == 0 ||
+										strcmp(cmd, "XOR") == 0 || strcmp(cmd, "cd") == 0 || strcmp(cmd, "cpusage") == 0 ||
+										strcmp(cmd, "man") == 0 || strcmp(cmd, "echo") == 0)
 								{
-									//echo(my_argv, argc+1);
-									saved_stdout = dup(STDOUT_FILENO);
-									int it = 1;
-									int it2 = 1;
-									int redirOut = 0;
-									int myargc2 = 0;
-									
-									for (it2; my_argv[it2] != NULL; it2++)
-									{
-										if (strcmp(my_argv[it2], ">") == 0)
-										{
-											redirOut = 1;
-										}
-										myargc2++;
-									}
-									
-									if (redirOut == 1)
-									{
-										redir_out(my_argv[myargc2]);
-										for (it; my_argv[it] != NULL; it++)
-										{
-											if (my_argv[it][0] == '$')
-											{
-												// Check and print variable.
-												//printf("VAR ");
-											
-												int err = 1;
-												int j;
-												char buffer[15];
-
-												int k;
-
-												for (k = 0; k < 15; k++)
-												{
-													if (my_argv[it][k] != '\0')
-													{
-														buffer[k] = my_argv[it][k+1];
-													}
-												}
-
-												for (j = 0; j < 100; j++)
-												{
-													//printf("%d\n", j);
-													//printf("%s\n", myvar[j].varName);
-													if (strcmp(buffer, myvar[j].varName) == 0)
-													{
-														printf("%s%s", myvar[j].varData, " ");
-														err = 0;
-													}
-												}
-	
-												if (err == 1)
-												{
-													printf("$UNKNOWN_VAR ");
-												}
-											}
-											else
-											{
-												if (it < myargc2 - 1)
-												{
-													printf("%s ", my_argv[it]);
-												}
-											}
-										}
-										fflush(stdout);
-									}
-									else
-									{
-										for (it; my_argv[it] != NULL; it++)
-										{
-											if (my_argv[it][0] == '$')
-											{
-												// Check and print variable.
-												//printf("VAR ");
-											
-												int err = 1;
-												int j;
-												char buffer[15];
-
-												int k;
-
-												for (k = 0; k < 15; k++)
-												{
-													if (my_argv[it][k] != '\0')
-													{
-														buffer[k] = my_argv[it][k+1];
-													}
-												}
-
-												for (j = 0; j < 100; j++)
-												{
-													//printf("%d\n", j);
-													//printf("%s\n", myvar[j].varName);
-													if (strcmp(buffer, myvar[j].varName) == 0)
-													{
-														printf("%s%s", myvar[j].varData, " ");
-														err = 0;
-													}
-												}
-	
-												if (err == 1)
-												{
-													printf("$UNKNOWN_VAR ");
-												}
-											}
-											else
-											{
-												printf("%s ", my_argv[it]);
-											}
-										}
-									}
-									dup2(saved_stdout, 1);
-									close(saved_stdout);
-									printf("\n");
-
-								}
-								else if (strcmp(cmd, "cpusage") == 0)
-								{
-									saved_stdout = dup(STDOUT_FILENO);
-									if (my_argv[1] != NULL)
-										{
-											if (strcmp(my_argv[1], ">") == 0)
-											{
-												if (my_argv[2] != NULL)
-												{
-													// Redirect output to a file.
-													redir_out(my_argv[2]);
-													printf("Cpusage\n");
-													fflush(stdout);
-												}
-											}
-										}
-										else
-										{
-											printf("Cpusage\n");
-										}
-										dup2(saved_stdout, 1);
-										close(saved_stdout);
-										printf("\n");
-								}
-								else if (strcmp(cmd, "superBash") == 0)
-								{
-									saved_stdout = dup(STDOUT_FILENO);
-									if (my_argv[1] != NULL)
-										{
-											if (strcmp(my_argv[1], ">") == 0)
-											{
-												if (my_argv[2] != NULL)
-												{
-													// Redirect output to a file.
-													redir_out(my_argv[2]);
-													//superBash();
-													printf("SuperBash\n");
-													fflush(stdout);
-												}
-											}
-										}
-										else
-										{
-											//superBash();
-											printf("SuperBash\n");
-										}
-										dup2(saved_stdout, 1);
-										close(saved_stdout);
-										printf("\n");
-									
-								}
-								else if (strcmp(cmd, "strToBinary") == 0)
-								{
-										saved_stdout = dup(STDOUT_FILENO);
-										if (my_argv[2] != NULL)
-										{
-											if (strcmp(my_argv[2], ">") == 0)
-											{
-												if (my_argv[3] != NULL)
-												{
-													// Redirect output to a file.
-													redir_out(my_argv[3]);
-													int** p = strToBinary(my_argv[1]);
-													fflush(stdout);
-												}
-											}
-										}
-										else
-										{
-											int** p = strToBinary(my_argv[1]);
-										}
-										dup2(saved_stdout, 1);
-										close(saved_stdout);
-										printf("\n");
-								}
-								else if (strcmp(cmd, "XOR") == 0)
-								{
-										saved_stdout = dup(STDOUT_FILENO);
-										if(my_argv[3] != NULL)
-										{
-											if (strcmp(my_argv[3], ">") == 0)
-											{
-												if (my_argv[4] != NULL)
-												{
-													redir_out(my_argv[4]);
-													xorBinary(my_argv[1], my_argv[2], strlen(my_argv[1]), strlen(my_argv[2])); 
-													fflush(stdout);
-												}
-											}
-										}
-										else
-										{
-											xorBinary(my_argv[1], my_argv[2], strlen(my_argv[1]), strlen(my_argv[2])); 
-										}
-										
-										dup2(saved_stdout, 1);
-										close(saved_stdout);
-								}
-								else if (strcmp(cmd, "cd") == 0)
-								{
-										saved_stdout = dup(STDOUT_FILENO);
-										if(outBool = 1)
-										{
-											redir_out(my_argv[2]);
-											printf("cd\n");
-										}
-										else
-										{
-											//change directory
-											printf("cd\n");
-										}
-								}
-								else if (strcmp(cmd, "man") == 0)
-								{
-									saved_stdout = dup(STDOUT_FILENO);
-									saved_stdin = dup(STDIN_FILENO);
-									if (my_argv[1] != NULL)
-									{
-										if (my_argv[2] != NULL)
-										{
-											if (outBool == 1 && inBool == 0)
-											{
-												if (my_argv[3] != NULL)
-												{
-													redir_out(my_argv[3]);
-													//change directory
-													man(my_argv[1]);
-												}
-											}
-											else if (outBool == 0 && inBool == 1)
-											{
-												// Just file input
-												FILE *input;
-												char c;
-												char temp[5];
-												char temp2[25];
-												int k = 0;
-												//printf("Opening\n");
-												input = fopen(my_argv[2], "r");
-												
-												if (input == NULL)
-												{
-													printf("Error opening file\n");
-													printf("Sometimes you have to try again\n");
-												}
-												else
-												{
-												
-												
-												
-												//printf("Assigning\n");
-												while((c = fgetc(input)) != EOF)
-												{
-												//printf("Assigning2\n");
-													if (c != '\n')
-													{
-														//printf("Assigning %c\n", c);
-														temp[k] = c;
-														k++;
-													}
-													else
-													{
-														//printf("Empty\n");
-														//temp[k] = EOF;
-													}
-												}
-												fclose(input);
-												fflush(stdin);
-												//man(temp);
-												//printf("%s\n", temp);
-												strncpy(temp2,temp,k);
-												//printf("%s\n", temp2);
-												man(temp);
-												//printf("Just Input\n");
-												}
-											}
-											else if (outBool == 1 && inBool == 1)
-											{
-												// Do both (input then output)
-												FILE *input;
-												char c;
-												char temp[5];
-												char temp2[25];
-												int k = 0;
-												//printf("Opening\n");
-												input = fopen(my_argv[2], "r");
-												
-												if (input == NULL)
-												{
-													printf("Error opening file\n");
-													printf("Sometimes you have to try again\n");
-												}
-												else
-												{
-												
-												
-												
-												//printf("Assigning\n");
-												while((c = fgetc(input)) != EOF)
-												{
-												//printf("Assigning2\n");
-													if (c != '\n')
-													{
-														//printf("Assigning %c\n", c);
-														temp[k] = c;
-														k++;
-													}
-													else
-													{
-														//printf("Empty\n");
-														//temp[k] = EOF;
-													}
-												}
-												fclose(input);
-												fflush(stdin);
-												//man(temp);
-												//printf("%s\n", temp);
-												strncpy(temp2,temp,k);
-												//printf("%s\n", temp2);
-												redir_out(my_argv[4]);
-												man(temp);
-												fflush(stdout);
-												//printf("Just Input\n");
-												}
-											}
-											else if(strcmp(my_argv[1] , "<") == 0)
-											{
-												if (my_argv[2] != NULL)
-												{
-													printf("Trying to pass in from file\n");
-													char buffer[100];
-													fgets(buffer, 100, my_argv[2]);
-													printf("Sending to man\n");
-													man(buffer);
-													fflush(stdin);
-												}
-											}
-										}
-										else
-										{
-											man(my_argv[1]);
-										}
-									}
-									else
-									{
-										man("ERR");
-									}
-									
-									dup2(saved_stdout, 1);
-									close(saved_stdout);
-									
-									dup2(saved_stdin, 0);
-									close(saved_stdin);
-									//printf("man\n");
+									execute_function(0,0,0);
 								}
 								else if (strcmp(cmd, "quit") == 0)
 								{
@@ -953,7 +1014,6 @@ int main(int argc, char *argv[], char *envp[])
 								{
 									saved_stdout = dup(STDOUT_FILENO);
 									
-									// This does not work. This should not be looking at argv and argc
 									if (strcmp(my_argv[myargc - 1],"&") == 0)
 									{
 										

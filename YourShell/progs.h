@@ -13,7 +13,7 @@ void man(char argv[]);
 void cpusage();
 int cd(char input[]);
 void cpuAverage();
-void superBash(int argc, char * argv[]);
+void superBash(int argc, char argv[]);
 int* charToBinary(char var);
 int** strToBinary(char str[]);
 void xorBinary(char arr1[], char arr2[],int size1, int size2);
