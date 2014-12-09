@@ -26,7 +26,7 @@ struct variable
 	char varData[25];
 };
 static char *my_argv[100], *my_envp[100], *my_var[100];			// Added array for variables (for echo to use)
-static char *temp_argv[100];
+static char *temp_argv[100], *temp_argv2[100];
 static char *search_path[10];
 static struct variable myvar[100];
 int outBool = 0;
@@ -84,8 +84,39 @@ void fill_temp_argv(int index)
 	{
 		if (strcmp(my_argv[j],"|") != 0)
 		{
-			//printf("Copy\n");
+			printf("Copy %s\n", my_argv[j]);
 			temp_argv[i] = my_argv[j];
+			//strncpy(temp_argv[i], my_argv[j], strlen(my_argv[i]));
+			//printf("Iterate\n");
+			i++;
+			j++;
+		}
+		else
+		{
+			break;
+		}
+	}
+}
+
+void fill_temp_argv2(int index, int whichOne)
+{
+	int i = 0;
+	int j = index;
+	
+	//printf("While not null\n");
+	while (my_argv[j] != NULL)
+	{
+		if (strcmp(my_argv[j],"|") != 0)
+		{
+			printf("Copy %s\n", my_argv[j]);
+			if (whichOne == 0)
+			{
+				temp_argv[i] = my_argv[j];
+			}
+			else
+			{
+				temp_argv2[i] = my_argv[j];
+			}
 			//strncpy(temp_argv[i], my_argv[j], strlen(my_argv[i]));
 			//printf("Iterate\n");
 			i++;
@@ -204,6 +235,8 @@ void call_execve2(char *cmd)
     int i;
 	// Only run if last command in argv is not '&'
 	printf("cmd is %s\n", cmd);
+	
+	
 	if (fork() == 0) 
 	{
 			// Need to create a boolean type thing to check this
@@ -224,7 +257,41 @@ void call_execve2(char *cmd)
 				exit(1);
 			}
 	}
-	else {
+	//else {
+	//	printf("Waiting\n");
+	//	wait(NULL);
+	//}
+}
+
+void call_execve3(char *cmd, int whichOne)
+{
+	int i;
+	printf("cmd is %s\n", cmd);
+	
+	if (fork() == 0)
+	{
+		if (whichOne == 0)
+		{
+			i = execve(cmd, temp_argv, my_envp);
+			printf("errno is %d\n", errno);
+			if (i < 0) {
+				printf("%s: %s\n", cmd, "command not found");
+				exit(1);
+			}
+		}
+		else
+		{
+		i = execve(cmd, temp_argv2, my_envp);
+			printf("errno is %d\n", errno);
+			if (i < 0) {
+				printf("%s: %s\n", cmd, "command not found");
+				exit(1);
+			}
+		}
+	}
+	else
+	{
+		printf("Waiting...\n");
 		wait(NULL);
 	}
 }
@@ -260,20 +327,6 @@ void call_execve_background(char *cmd)
 
 	return;
 }
-
-// From gnu.org/software/libc/manual/html_node/Foreground-and-Background.html
-/* //Not seeing this used anywhere
-void put_job_in_background(job *j, int cont)
-{
-	if (cont)
-	{
-		if (kill(-j->pgid, SIGCONT) < 0)
-		{
-			perror("kill (SIGCONT)");
-		}
-	}
-}
-*/
 
 void free_argv()
 {
@@ -800,16 +853,19 @@ void execute_pipe(int arg1Index, int arg2Index, int pipeI)
 		
 	if (i == 0 && j == 0)
 	{
-	char *cmd = (char *)malloc(sizeof(char) * 100);
-	char *cmd2 = (char *)malloc(sizeof(char) * 100);
-	int fds[2];
-	int status;
-	pipe(fds);
-	if (fork())
-	{
-		//dup2(fds[1],STDOUT_FILENO);
-		//execute_function(arg1Index, 1, 0);
+		char *cmd = (char *)malloc(sizeof(char) * 100);
+		char *cmd2 = (char *)malloc(sizeof(char) * 100);
 		strncpy(cmd, my_argv[arg1Index], strlen(my_argv[arg1Index]));
+		strncat(cmd, "\0", 1);
+		strncpy(cmd2, my_argv[arg2Index], strlen(my_argv[arg2Index]));
+		strncat(cmd2, "\0", 1);
+		/*int fds[2];
+		int status;
+
+					dup2(fds[1],STDOUT_FILENO);
+					printf("Fork() == 0\n");
+					strncpy(cmd, my_argv[arg1Index], strlen(my_argv[arg1Index]));
+					printf("CMD is %s\n", my_argv[arg1Index]);
 					strncat(cmd, "\0", 1);
 					fill_temp_argv(arg1Index);
 					if (attach_path(cmd) == 0)
@@ -817,14 +873,15 @@ void execute_pipe(int arg1Index, int arg2Index, int pipeI)
 					// Incidentally, this actually works better than the original
 					// YSH method of handling Linux commands. For whatever reason,
 					// this actually allows for command line options.
-						call_execve2(cmd);
+						//call_execve2(cmd);
+						execute_function(arg1Index, 1, 0);
 					}
-	}
-	else
-	{
-		//dup2(fds[0], STDIN_FILENO);
-		//execute_function(arg2Index, 0, 1);
-		strncpy(cmd2, my_argv[arg2Index], strlen(my_argv[arg2Index]));
+					
+
+					dup2(fds[0], STDIN_FILENO);
+					printf("Fork() != 0\n");
+					strncpy(cmd2, my_argv[arg2Index], strlen(my_argv[arg2Index]));
+					printf("CMD is %s\n", my_argv[arg2Index]);
 					strncat(cmd2, "\0", 1);
 					fill_temp_argv(arg2Index);
 					if (attach_path(cmd2) == 0)
@@ -832,28 +889,55 @@ void execute_pipe(int arg1Index, int arg2Index, int pipeI)
 					// Incidentally, this actually works better than the original
 					// YSH method of handling Linux commands. For whatever reason,
 					// this actually allows for command line options.
-						call_execve2(cmd2);
+						//call_execve2(cmd2);
+						execute_function(arg2Index, 0, 1);
 					}
-	}
+					close(fds[0]);
+					close(fds[1]);
 
-	int c = close(fds);
-	}
-	//execute_function(arg1Index, 1, 0);
-	//execute_function(arg2Index, 0, 1);
-	
-	//if (fork() == 0)
-	//{
-		//dup2(fds[1], STDOUT_FILENO);
+		*/
+		pid_t pid;
+		int pipefd[2];
+		pipe(pipefd);
+		pid = fork();
 		
-		//call_execve(arg1);
-	//}
-	//else
-	//{
-		//dup2(fds[0], STDIN_FILENO);
+		if (pid == -1)
+		{
+			printf("Pipe Error\n");
+			exit(EXIT_FAILURE);
+		}
 		
-		//call_exceve(arg2);
-	//}
-	return;
+		if (pid > 0)
+		{
+			printf("Greater than 0 \n");
+			close(pipefd[0]);
+			dup2(pipefd[1],1);
+			
+			fill_temp_argv2(arg1Index,0);
+			if (attach_path(cmd) == 0)
+			{
+				//call_execve3(cmd,0);
+				execvp(cmd, temp_argv);
+			}
+			close(pipefd[1]);
+		}
+		else
+		{
+		printf("Less than 0 \n");
+			close(pipefd[1]);
+			dup2(pipefd[0],0);
+			
+			fill_temp_argv2(arg2Index,1);
+			if (attach_path(cmd2) == 0)
+			{
+				//call_execve3(cmd2,1);
+				execvp(cmd2, temp_argv2);
+			}
+			close(pipefd[0]);
+			exit(EXIT_FAILURE);		
+		}
+	}	
+	//return;
 }
 
 
@@ -1021,10 +1105,10 @@ int main(int argc, char *argv[], char *envp[])
 											{
 												if (my_argv[2] != NULL)
 												{
-													char *tempcmd = (char *)malloc(sizeof(char) * 100);
-													strncpy(tempcmd, "/bin/" , 5);
-													strncat(tempcmd, my_argv[0], strlen(my_argv[0]));
-													strncat(tempcmd, "\0", 1);
+													//char *tempcmd = (char *)malloc(sizeof(char) * 100);
+													//strncpy(tempcmd, "/bin/" , 5);
+													//strncat(tempcmd, my_argv[0], strlen(my_argv[0]));
+													//strncat(tempcmd, "\0", 1);
 													//strncpy(cmd, my_argv[0], strlen(my_argv[0]));
 													//strncat(cmd, "\0", 1);
 													//redir_out(my_argv[2]);
