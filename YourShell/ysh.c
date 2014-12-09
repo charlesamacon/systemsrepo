@@ -675,26 +675,14 @@ void execute_function(int argIndex, int out, int in)
 			// superBash
 			else if (strcmp(my_argv[argIndex], "superBash") == 0)
 			{
-				if(outBool == 1)
+				if (my_argv[argIndex + 2] != NULL)
 				{
-					if (my_argv[argIndex + 3] != NULL)
-					{
-						redir_out(my_argv[argIndex + 1]);
-						superBash(0, my_argv[argIndex + 3]);
-						printf("superBash\n");
-					}
-					else
-					{
-						printf("Error: No file to redirect to\n");
-					}
+					superBash(0, my_argv[argIndex + 1], my_argv[argIndex + 2]);
 				}
 				else
 				{
-						//redir_out(my_argv[argIndex + 2]);
-						superBash(0, my_argv[argIndex + 1]);
-						printf("superBash\n");
-
-				}					
+					superBash(0, my_argv[argIndex + 1], "output");
+				}				
 			} // end superBash
 			
 			// cd

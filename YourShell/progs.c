@@ -264,7 +264,7 @@ void cpuAverage(){ //Returns first float of the file cpuLoad
 }
 
 // SuperBash
-void superBash(int argc, char argv[])
+void superBash(int argc, char argv[], char out[])
 {
 	// This is a line for line copy of the superbash program. Except we need to fix the segmentation faults.
 	FILE *input;
@@ -280,8 +280,10 @@ void superBash(int argc, char argv[])
 
 	//----------------------------Open File Input-----------------------------------
 
-	input = fopen(argv[0], "r");  //Opens the file listed on the command line call for reading
+	printf("SuperBash: Opening file %s\n", argv);
+	input = fopen(argv, "r");  //Opens the file listed on the command line call for reading
 
+	//printf("Copying String\n");
 	while ((c = fgetc(input)) != EOF){  //Copies file to 2d character array string
 		if (c != '\n'){
 			string[k][i] = c;
@@ -317,6 +319,7 @@ void superBash(int argc, char argv[])
 	char doString[100] = "do\n";
 	char doneString[100] = "repeatIndex1=$[$repeatIndex1+1]\ndone\n";
 
+	printf("SuperBash: Converting\n");
 	while (string[k][i] != EOF)
 	{
 		if (string[k][i] == 'r' && string[k][i + 1] == 'e' && string[k][i + 2] == 'p' && string[k][i + 3] == 'e' && string[k][i + 4] == 'a' && string[k][i + 5] == 't')
@@ -388,15 +391,19 @@ void superBash(int argc, char argv[])
 	}
 	//-----------------------------Write to Output-------------------------------
 
-	output = fopen("output", "w"); //Creates output file and opens it for writing
+	printf("SuperBash: Outputting to %s\n", out);
+	output = fopen(out, "w"); //Creates output file and opens it for writing
 
+	printf("SuperBash: Checking output file %s\n", out);
 	while (n<k){ //Temporary code to check file copying and output
 		fputs(string[n], output);
 		n++;
 	}
 
+	printf("SuperBash: Closing output file %s\n", out);
 	fclose(output);
 
+	printf("\n");
 	return;
 }
 
