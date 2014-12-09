@@ -72,9 +72,8 @@ void man(char argv[])
 			"Name\n"
 			"echo - display a line of text\n\n"
 			"Synopsis:\n"
-			"echo[SHORT - OPTION]...[STRING]...\n"
-			"echo LONG - OPTION\n\n"
-			"Description:\n\n"
+			"echo [STRING]...[$VAR]...\n\n"
+			"Description:\n"
 			"Echo the STRING(s) to standard output.\n\n"
 			"Echo also supports the use of variables.\n\n"
 			"Example:\n\n"
@@ -82,14 +81,25 @@ void man(char argv[])
 			"[SSSH ] echo variable equals $variable\n"
 			"variable equals 4\n\n");
 	}
+	else if (strcmp(man, "-clear") == 0)
+	{
+		printf("CLEAR			User Commands\n\n"
+			"Name\n"
+			"clear - clears the screen\n\n"
+			"Synopsis:\n"
+			"clear\n\n"
+			"Description:\n"
+			"Properly clears the screen by outputting a bunch of escape codes.\n"
+			"The Linux version would cause issues with certain functions.\n\n");
+	}
 	else if (strcmp(man, "-cpusage") == 0)
 	{
-		printf("cpusage			User Commands\n\n"
+		printf("CPUSAGE			User Commands\n\n"
 			"Name\n"
 			"cpusage - Display the average CPU usage of the past 24 - hour period.\n\n"
 			"Synopsis:\n"
 			"cpusage[SHORT - OPTION]...\n\n"
-			"Description:\n\n"
+			"Description:\n"
 			"Displays the current average CPU usage of the past 24 - hour period.\n\n"
 			"This is associated with a background process that uses the top command\n"
 			"to get a 'snapshot' of the CPU usage every hour and log it.cpusage\n"
@@ -97,12 +107,12 @@ void man(char argv[])
 	}
 	else if (strcmp(man, "-man") == 0)
 	{
-		printf("man			User Commands\n\n"
+		printf("MAN			User Commands\n\n"
 			"Name\n"
 			"man - displays the manual page for a given command\n\n"
 			"Synopsis:\n"
 			"man[SHORT - OPTION]...\n\n"
-			"Description:\n\n"
+			"Description:\n"
 			"man is the system's manual pager. Each page argument given to man is\n"
 			"normally the name of a program, utility or function.The manual page\n"
 			"associated with each of these arguments is then found and displayed.\n\n"
@@ -110,8 +120,9 @@ void man(char argv[])
 			"page for a given command. Whether or not this will persist in the final\n"
 			"project remains to be seen. Short, sweet, and to the point right now.\n\n"
 			"Currently implemented man pages :\n"
-			"echo\n"
+			"clear\n"
 			"cpusage\n"
+			"echo\n"
 			"man\n"
 			"quit\n"
 			"strToBinary\n"
@@ -123,12 +134,12 @@ void man(char argv[])
 	}
 	else if (strcmp(man, "-superBash") == 0)
 	{
-		printf("superBash		User Commands\n\n"
+		printf("SUPERBASH		User Commands\n\n"
 				"Name\n"
 				"superBash - translates basic c programs to some bash commands\n\n"
 				"Synopsis:\n"
 				"superBash[INPUT]...[OPTIONAL OUTPUT]\n\n"
-				"Description:\n\n"
+				"Description:\n"
 				"superBash allows the user to translate very basic (and very specific)\n"
 				"c programs into a format that is usable by bash. This is mainly a translator\n"
 				"for programs that make use of loops.\n\n"
@@ -138,12 +149,12 @@ void man(char argv[])
 	}
 	else if (strcmp(man, "-strToBinary") == 0)
 	{
-		printf("strToBinary		User Commands\n\n"
+		printf("STRTOBINARY		User Commands\n\n"
 				"Name\n"
 				"strToBinary - returns a binary translation of a string\n\n"
 				"Synopsis:\n"
 				"strToBinary [STRING]\n\n"
-				"Description:\n\n"
+				"Description:\n"
 				"strToBinary returns a character-by-character binary translation of\n"
 				"and ASCII string\n\n"
 				"Example:\n\n"
@@ -157,7 +168,7 @@ void man(char argv[])
 				"XOR - returns the XOR value of two strings\n\n"
 				"Synopsis:\n"
 				"XOR [STRING 1] ... [STRING 2]\n\n"
-				"Description:\n\n"
+				"Description:\n"
 				"XOR returns the XOR value (in binary) of two strings to determine\n"
 				"whether or not each character is different. XOR takes the length of\n"
 				"of the shortest string\n"
@@ -167,16 +178,17 @@ void man(char argv[])
 	}
 	else if (strcmp(man, "-cd") == 0)
 	{
-		printf("THIS FEATURE IS NOT YET IMPLEMENTED.\n");
+		printf("CD			User Commands\n\n"
+				"THIS FEATURE IS NOT YET IMPLEMENTED.\n");
 	}
 	else if (strcmp(man, "-quit") == 0)
 	{
-		printf("quit			User Commands\n\n"
+		printf("QUIT			User Commands\n\n"
 				"Name\n"
 				"quit - quits the shell\n\n"
 				"Synopsis:\n"
 				"quit\n\n"
-				"Description:\n\n"
+				"Description:\n"
 				"Frees all memory and exits out of the shell. Like it should.\n");
 	}
 	else

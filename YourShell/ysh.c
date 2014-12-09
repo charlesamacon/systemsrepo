@@ -977,6 +977,10 @@ int main(int argc, char *argv[], char *envp[])
 								{
 									execute_function(0,0,0);
 								}
+								else if(strcmp(cmd, "clear") == 0)
+								{
+									printf("\033[H\033[J");
+								}
 								else if (strcmp(cmd, "quit") == 0)
 								{
 									// Free all memory
