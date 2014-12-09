@@ -277,7 +277,13 @@ void assign_variable(char var[], char value[])
 	}
 }
 
-void execute_pipe(char arg1[], char arg2[])
+void execute_function(int argIndex, int out, int in)
+{
+	printf("Executing function: %s\n", my_argv[argIndex]);
+	return;
+}
+
+void execute_pipe(int arg1Index, int arg2Index, int pipeI)
 {
 	// This is to be reworked by Jordan.
 	// While this is the general idea of the thing, a much simpler method was figured out on 11/25/2014.
@@ -287,8 +293,8 @@ void execute_pipe(char arg1[], char arg2[])
 	int fds[2];
 	//pipe(fds);
 
-	execute_function(arg1, 1, 0);
-	execute_function(arg2, 0, 1);
+	execute_function(arg1Index, 1, 0);
+	execute_function(arg2Index, 0, 1);
 	
 	/*if (fork())
 	{
@@ -303,11 +309,7 @@ void execute_pipe(char arg1[], char arg2[])
 	return;
 }
 
-void execute_function(char func[], int out, int in)
-{
-	printf("Executing function: %s\n", func);
-	return;
-}
+
 
 void redir_in(char file[])
 {
@@ -445,7 +447,7 @@ int main(int argc, char *argv[], char *envp[])
 								
 								if (pipeBool == 1)
 								{
-									execute_pipe(my_argv[pipeIndex - 1], my_argv[pipeIndex + 1]);
+									execute_pipe(pipeIndex - 1, pipeIndex + 1, pipeIndex);
 								}
 								else
 								{
