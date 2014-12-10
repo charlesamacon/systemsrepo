@@ -745,7 +745,8 @@ void execute_function(int argIndex, int out, int in)
 				if(outBool = 1)
 				{
 					redir_out(my_argv[argIndex + 2]);
-					printf("cd\n");
+					printf("Changing to directory %s\n",my_argv[argIndex+1]);
+					chdir(my_argv[argIndex+1]);
 				}
 				else
 				{
