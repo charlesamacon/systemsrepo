@@ -976,9 +976,11 @@ int main(int argc, char *argv[], char *envp[])
 
     if(fork() == 0) {
         execve("/usr/bin/clear", argv, my_envp);
+		
 		// I think this is where we should call the background function for cpusage();
         exit(1);
     } else {
+		//cpuUsage();
         wait(NULL);
     }
     printf("[SSSH ] ");
@@ -1164,7 +1166,7 @@ int main(int argc, char *argv[], char *envp[])
                        printf("[SSSH ] ");
                        bzero(cmd, 100);
                    }
-
+					//printf("BZERO\n");
                    bzero(tmp, 100);
                    break;
 
@@ -1172,6 +1174,7 @@ int main(int argc, char *argv[], char *envp[])
                  break;
         }
     }
+	//printf("QUITTING\n");
     free(tmp);
     free(path_str);
     for(i=0;my_envp[i]!=NULL;i++)

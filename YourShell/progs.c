@@ -202,11 +202,15 @@ void man(char argv[])
 
 // cpuUsage
 void cpuUsage(){ //Call this in the background
+	//printf("cpUsage\n");
     float first[4], final[4], loadavg, time, total;
-	time = 0;
+	time = 0.0f;
     FILE *fp;
+	
+	
 
     while(1){
+		//printf("OPENING FILE\n");
         fp = fopen("/proc/stat","r");
         fscanf(fp,"%*s %f %f %f %f",&first[0],&first[1],&first[2],&first[3]);
         fclose(fp);
