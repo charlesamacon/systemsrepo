@@ -830,7 +830,15 @@ void execute_pipe(int arg1Index, int arg2Index, int pipeI)
 	int j = 0;
 	
 	//pipe(fds);
-	
+	if (my_argv[arg1Index][0] == '-')
+	{
+		if (my_argv[arg1Index = 1] != NULL)
+		{
+			execute_pipe(arg1Index - 1, arg2Index, pipeI);
+		}
+	}
+	else
+	{
 	if (strcmp(my_argv[arg1Index],"echo") == 0 || strcmp(my_argv[arg1Index],"cpusage") == 0 || 
 		strcmp(my_argv[arg1Index],"superBash") == 0 || strcmp(my_argv[arg1Index],"strToBinary") == 0 ||
 		strcmp(my_argv[arg1Index],"XOR") == 0 || strcmp(my_argv[arg1Index],"cd") == 0 || 
@@ -936,7 +944,8 @@ void execute_pipe(int arg1Index, int arg2Index, int pipeI)
 			close(pipefd[0]);
 			exit(EXIT_FAILURE);		
 		}
-	}	
+	}
+	}
 	//return;
 }
 
