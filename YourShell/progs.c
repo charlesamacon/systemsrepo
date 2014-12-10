@@ -129,8 +129,8 @@ void man(char argv[])
 			"superBash\n"
 			"XOR\n"
 			"Examples\n\n"
-			"man -ls\n"
-			"Display the manual page for the program ls.\n");
+			"man -XOR\n"
+			"Display the manual page for the program XOR.\n");
 	}
 	else if (strcmp(man, "-superBash") == 0)
 	{
