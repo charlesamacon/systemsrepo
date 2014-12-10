@@ -1,0 +1,6 @@
+#!/bin/bash
+
+gcc progs.c ysh.c -o SSSH
+gcc cpuBack.c -o cpuMonitor
+./cpuMonitor &
+./SSSH
