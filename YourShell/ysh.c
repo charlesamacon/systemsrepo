@@ -84,7 +84,7 @@ void fill_temp_argv(int index)
 	{
 		if (strcmp(my_argv[j],"|") != 0)
 		{
-			printf("Copy %s\n", my_argv[j]);
+			//printf("Copy %s\n", my_argv[j]);
 			temp_argv[i] = my_argv[j];
 			//strncpy(temp_argv[i], my_argv[j], strlen(my_argv[i]));
 			//printf("Iterate\n");
@@ -108,7 +108,7 @@ void fill_temp_argv2(int index, int whichOne)
 	{
 		if (strcmp(my_argv[j],"|") != 0)
 		{
-			printf("Copy %s\n", my_argv[j]);
+			//printf("Copy %s\n", my_argv[j]);
 			if (whichOne == 0)
 			{
 				temp_argv[i] = my_argv[j];
@@ -425,8 +425,6 @@ void execute_function(int argIndex, int out, int in)
 {
 
 	//We should only call functions this way.
-	//We'll need another method for calling cmds (call_exceve)
-	//We just need to figure out a way to differentiate between them
 	int saved_stdout;
 	int saved_stdin;
 	saved_stdout = dup(STDOUT_FILENO);
@@ -438,7 +436,7 @@ void execute_function(int argIndex, int out, int in)
 		strcmp(my_argv[argIndex],"XOR") == 0 || strcmp(my_argv[argIndex],"cd") == 0 || 
 		strcmp(my_argv[argIndex],"man") == 0 || strcmp(my_argv[argIndex],"quit") == 0)
 		{
-			printf("Executing function: %s\n", my_argv[argIndex]);
+			//printf("Executing function: %s\n", my_argv[argIndex]);
 			
 			//XOR
 			if (strcmp(my_argv[argIndex], "XOR") == 0)
@@ -625,19 +623,18 @@ void execute_function(int argIndex, int out, int in)
 												if (my_argv[argIndex + 3] != NULL)
 												{
 													redir_out(my_argv[argIndex + 3]);
-													//change directory
 													man(my_argv[argIndex + 1]);
 												}
 											}
 											else if (outBool == 0 && inBool == 1)
 											{
-												printf("Input\n");
+												//printf("Input\n");
 												FILE *input;
 												char c;
 												char temp[25];
 												char temp2[25];
 												int k = 0;
-												printf("Init Input\n");
+												//printf("Init Input\n");
 												input = fopen(my_argv[argIndex + 2], "r");
 												
 												if (input == NULL)
@@ -648,7 +645,7 @@ void execute_function(int argIndex, int out, int in)
 												}
 												else
 												{
-													printf("Input not null\n");
+													//printf("Input not null\n");
 													int l = 0;
 													while((c = fgetc(input)) != EOF)
 													{
@@ -665,7 +662,7 @@ void execute_function(int argIndex, int out, int in)
 												fclose(input);
 												fflush(stdin);
 												strncpy(temp2,temp,k);
-												printf("%s\n%s\n",temp, temp2);
+												//printf("%s\n%s\n",temp, temp2);
 												man(temp2);
 												//fclose(input);
 												}
@@ -787,13 +784,13 @@ void execute_function(int argIndex, int out, int in)
 				}
 				else
 				{
-					printf("Move to cmd2\n");
+					//printf("Move to cmd2\n");
 					strncpy(cmd, my_argv[argIndex], strlen(my_argv[argIndex]));
 					strncat(cmd, "\0", 1);
 					fill_temp_argv(argIndex);
 					if (attach_path(cmd) == 0)
 					{
-						printf("Path attached\n");
+						//printf("Path attached\n");
 					// Incidentally, this actually works better than the original
 					// YSH method of handling Linux commands. For whatever reason,
 					// this actually allows for command line options.
@@ -803,14 +800,14 @@ void execute_function(int argIndex, int out, int in)
 			}
 			else
 			{
-				printf("Move to cmd\n");
+				//printf("Move to cmd\n");
 				strncpy(cmd, my_argv[argIndex], strlen(my_argv[argIndex]));
 				strncat(cmd, "\0", 1);
-				printf("Fill Temp Argv\n");
+				//printf("Fill Temp Argv\n");
 				fill_temp_argv(argIndex);
 				if (attach_path(cmd) == 0)
 				{
-					printf("Call Execve 2\n");
+					//printf("Call Execve 2\n");
 					call_execve2(cmd);
 				}
 				//printf("Error22: Unrecognized Command\n");
@@ -824,7 +821,7 @@ void execute_pipe(int arg1Index, int arg2Index, int pipeI)
 	// This is to be reworked by Jordan.
 	// While this is the general idea of the thing, a much simpler method was figured out on 11/25/2014.
 	
-	printf("Executing Pipe\n");
+	//printf("Executing Pipe\n");
 
 	
 	int i = 0;
@@ -845,7 +842,7 @@ void execute_pipe(int arg1Index, int arg2Index, int pipeI)
 		strcmp(my_argv[arg1Index],"XOR") == 0 || strcmp(my_argv[arg1Index],"cd") == 0 || 
 		strcmp(my_argv[arg1Index],"man") == 0 || strcmp(my_argv[arg1Index],"quit") == 0)
 		{
-			printf("Executing function: %s\n", my_argv[arg1Index]);
+			//printf("Executing function: %s\n", my_argv[arg1Index]);
 			execute_function(arg1Index, 1, 0);
 			i = 1;
 		}
@@ -855,7 +852,7 @@ void execute_pipe(int arg1Index, int arg2Index, int pipeI)
 		strcmp(my_argv[arg2Index],"XOR") == 0 || strcmp(my_argv[arg2Index],"cd") == 0 || 
 		strcmp(my_argv[arg2Index],"man") == 0 || strcmp(my_argv[arg2Index],"quit") == 0)
 		{
-			printf("Executing function: %s\n", my_argv[arg2Index]);
+			//printf("Executing function: %s\n", my_argv[arg2Index]);
 			execute_function(arg2Index, 0, 1);
 			j = 1;
 		}
@@ -918,7 +915,7 @@ void execute_pipe(int arg1Index, int arg2Index, int pipeI)
 		
 		if (pid > 0)
 		{
-			printf("Greater than 0 \n");
+			//printf("Greater than 0 \n");
 			close(pipefd[0]);
 			dup2(pipefd[1],1);
 			
@@ -932,7 +929,7 @@ void execute_pipe(int arg1Index, int arg2Index, int pipeI)
 		}
 		else
 		{
-		printf("Less than 0 \n");
+		//printf("Less than 0 \n");
 			close(pipefd[1]);
 			dup2(pipefd[0],0);
 			
@@ -977,11 +974,8 @@ int main(int argc, char *argv[], char *envp[])
 
     if(fork() == 0) {
         execve("/usr/bin/clear", argv, my_envp);
-		
-		// I think this is where we should call the background function for cpusage();
         exit(1);
     } else {
-		//cpuUsage();
         wait(NULL);
     }
     printf("[SSSH ] ");
@@ -1076,7 +1070,7 @@ int main(int argc, char *argv[], char *envp[])
 								}
 								else if(strcmp(cmd, "clear") == 0)
 								{
-									printf("\033[H\033[J");
+									printf("\033[H\033[J");	// Clear the screen, for fun and profit
 								}
 								else if (strcmp(cmd, "quit") == 0)
 								{

@@ -179,7 +179,12 @@ void man(char argv[])
 	else if (strcmp(man, "-cd") == 0)
 	{
 		printf("CD			User Commands\n\n"
-				"THIS FEATURE IS NOT YET IMPLEMENTED.\n");
+				"Name\n"
+				"cd - changes the current directory\n\n"
+				"Synopsis:\n"
+				"cd [DIRECTORY]\n\n"
+				"Description: \n"
+				"cd changes the current working directory...and that's about it\n");
 	}
 	else if (strcmp(man, "-quit") == 0)
 	{
@@ -232,17 +237,7 @@ float cpuReadFloat(){
 int cd(char input[]) 
 { 
     int tempV;
-    //declare home and UserInput
-	//if ( input == " ")
-		//tempV = chdir(home);
-	//else 
-		//tempV = chdir(UserInput);
-	
-	
-	//I'm not inputting another else if because these should return a 0 or -1, if a -1 is returned
-	// aka it's false, it will stay where it is at. If it returns a 0, then it will change to that directory
-	
-	//Still looking into this because it seems too easy thus far....
+    // This specific function is depreciated and works elsewhere.
 
 }
 
